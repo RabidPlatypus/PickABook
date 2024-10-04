@@ -216,7 +216,7 @@
             const url = window.URL.createObjectURL(csvBlob);
             const downloadLink = document.createElement('a');
             downloadLink.href = url;
-            downloadLink.download = `${username}_activity2results.csv`;  // Download CSV
+            downloadLink.download = `${username}_PickABook.csv`;  // Download CSV
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
