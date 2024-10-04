@@ -52,7 +52,7 @@ In the second activity, the user is challenged to edit the metadata (such as aut
        │    ├── activity1results.html # Results page for activity 1
        │    ├── activity2.html    # Manipulate Metadata activity
        │    ├── activity2results.html # Results page for activity 2
-       └──  /scripts               # Contains JavaScript files
+       ├──  /scripts               # Contains JavaScript files
        │    ├── booksData.js # Contains book data
        
      ```
