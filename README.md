@@ -70,7 +70,7 @@ The AI uses metadata from Group 1 books to calculate a score for each book in Gr
 
 The formula used is:
 \[
-\text{Book Score} = ({Author Points}) + ({Age Range Points}) + ({Tag Points})
+{Book Score} = ({Author Points}) + ({Age Range Points}) + ({Tag Points})
 \]
 
 - **Author Points:** +1 for each matching author.
