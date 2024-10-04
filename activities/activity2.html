@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation Activity 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #30142c, #243B55);
+            color: white;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+        }
+        .books-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            margin-bottom: 50px;
+        }
+        .book {
+            margin: 10px;
+            text-align: center;
+            border: 2px solid white;
+            padding: 10px;
+            width: 150px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .highlight {
+            border-color: lime;
+        }
+        .editable {
+            cursor: pointer;
+            color: lime;
+        }
+        .editable:hover {
+            text-decoration: underline;
+        }
+        .button {
+            background-color: limegreen;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Activity 2: Edit Book Metadata to Influence Recommendations</h1>
+
+    <h2>Set 1: Edit these books to recommend the highlighted book from Set 2:</h2>
+    <h3>(Green text indicates editable field)</h3>
+    <div class="books-container" id="set1">
+        <!-- Books from Set 1 will appear here -->
+    </div>
+
+    <h2>Set 2: Target Books:</h2>
+    <div class="books-container" id="set2">
+        <!-- Books from Set 2 will appear here -->
+    </div>
+
+    <button id="recommend-button" class="button" onclick="getRecommendation()">Get Recommendation</button>
+</div>
+
+<script src="../scripts/booksData.js"></script>
+<script>
+
+    // Initialize variables
+    let set1Books = [];
+    let set2Books = [];
+    let editCount = 0;
+    
+    const weights = {
+        age_range: 3,
+        author: 1,
+        tags: 2,
+    };
+
+    // Extract unique values for dropdowns
+    const uniqueAuthors = [...new Set(books.map(book => book.author))];
+    const uniqueAgeRanges = [...new Set(books.map(book => book.age_range))];
+    const uniqueTags = [...new Set(books.flatMap(book => book.tags))];
+
+    
+    function randomizeBooks() {
+        // Shuffle all books, get first 8 for set 1 and the next 5 for set 2
+        let shuffled = books.sort(() => Math.random() - 0.5);
+        set1Books = shuffled.slice(0, 8);
+        set2Books = shuffled.slice(8, 13);
+    }
+
+    function displayBooks() {
+        // Create book elements with their data, then add to containers for display
+        const set1Container = document.getElementById('set1');
+        const set2Container = document.getElementById('set2');
+
+        set1Container.innerHTML = ''; // Clear container for re-display
+        set2Container.innerHTML = '';
+
+        // Display books in Set 1 with editable metadata
+        set1Books.forEach(book => {
+            const bookDiv = createEditableBookDiv(book);
+            set1Container.appendChild(bookDiv);
+        });
+
+        // Display the highlighted book in Set 2
+        set2Books.forEach((book, index) => {
+            const bookDiv = createBookDiv(book, index === 0);
+            set2Container.appendChild(bookDiv);
+        });
+    }
+
+    function createBookDiv(book, highlighted = false) {
+        // Add books to display container
+        const bookDiv = document.createElement('div');
+        bookDiv.classList.add('book');
+        if (highlighted) bookDiv.classList.add('highlight');
+        bookDiv.innerHTML = `
+            <img src="${book.image}" alt="${book.title}" width="100"><br>
+            <strong><u>${book.title}</u></strong><br>
+            <strong>Author: </strong><span class="data">${book.author}</span><br>
+            <strong>Age: </strong><span class="data">${book.age_range}</span><br>
+            <strong>Tags: </strong>${book.tags.map(tag => `<span class="data">${tag}</span>`).join('<br>')}
+        `;
+        return bookDiv;
+    }
+
+    function createEditableBookDiv(book) {
+    // Create book object with its metadata
+    const bookDiv = document.createElement('div');
+    bookDiv.classList.add('book');
+
+    // Create editable elements for author, age range, and tags
+    bookDiv.innerHTML = `
+        <img src="${book.image}" alt="${book.title}" width="100"><br>
+        <strong><u>${book.title}</u></strong><br>
+        <div><strong>Author:</strong> <br><span class="editable author">${book.author}</span></div>
+        <div><strong>Age:</strong> <br><span class="editable age_range">${book.age_range}</span></div>
+        <div><strong>Tags:</strong> <br>${book.tags.map(tag => `<span class="editable tag">${tag}</span>`).join('<br>')}</div>
+    `;
+
+    // Author edit listener
+    const authorSpan = bookDiv.querySelector('.author');
+    authorSpan.addEventListener('click', () => {
+        editField(authorSpan, 'author', uniqueAuthors, (newValue) => {
+            updateBookAuthor(book, newValue);
+        });
+    });
+
+    // Age range edit listener
+    const ageRangeSpan = bookDiv.querySelector('.age_range');
+    ageRangeSpan.addEventListener('click', () => {
+        editField(ageRangeSpan, 'age_range', uniqueAgeRanges, (newValue) => {
+            updateBookAgeRange(book, newValue);
+        });
+    });
+
+    // Tag edit listeners
+    const tagSpans = bookDiv.querySelectorAll('.tag');
+    tagSpans.forEach((tagSpan, index) => {
+        tagSpan.addEventListener('click', () => {
+            editField(tagSpan, 'tags', uniqueTags, (newValue) => {
+                updateBookTags(book, newValue);
+            });
+        });
+    });
+
+    return bookDiv;
+}
+
+
+function updateBookAuthor(book, newAuthor) {
+    // Update book author after editing
+    console.log("Updating author for:", book.title, "to:", newAuthor);
+    book.author = newAuthor;
+
+    // Find the book in set1Books and update the author
+    const bookIndex = set1Books.findIndex(b => b.title === book.title);
+    if (bookIndex !== -1) {
+        set1Books[bookIndex].author = newAuthor; // Update in the set1Books array
+    }
+}
+
+function updateBookAgeRange(book, newAgeRange) {
+    // Update book age range after editing
+    console.log("Updating age range for:", book.title, "to:", newAgeRange); 
+    book.age_range = newAgeRange;
+
+    // Find the book in set1Books and update the age range
+    const bookIndex = set1Books.findIndex(b => b.title === book.title);
+    if (bookIndex !== -1) {
+        set1Books[bookIndex].age_range = newAgeRange;  // Update in the set1Books array
+    }
+}
+
+function updateBookTags(book, newTag) {
+    // Update book tags after editing
+    console.log("Updating tags for:", book.title, "with:", newTag);
+    const tagIndex = book.tags.indexOf(newTag);
+    if (tagIndex === -1) {
+        book.tags.push(newTag);  // Add new tag if not present
+    } else {
+        book.tags.splice(tagIndex, 1);  // Toggle the tag
+    }
+
+    // Find the book in set1Books and update the tags
+    const bookIndex = set1Books.findIndex(b => b.title === book.title);
+    if (bookIndex !== -1) {
+        set1Books[bookIndex].tags = [...book.tags];  // Update tags in set1Books
+    }
+}
+
+
+let changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];  // Initialize or get the existing changes log
+
+
+function editField(span, type, options, onChange) {
+    // Logic for editing book data on screen
+    const currentValue = span.textContent;  // Get the original value
+
+    // Create the dropdown (select) element
+    const select = document.createElement('select');
+    options.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option;
+        opt.textContent = option;
+        if (option === currentValue) opt.selected = true;  // Set the current value as selected
+        select.appendChild(opt);
+    });
+
+    // Replace the text with the dropdown
+    span.innerHTML = '';  // Clear the current text
+    span.appendChild(select);
+
+    // Focus on the dropdown immediately so the user can interact with it
+    setTimeout(() => select.focus(), 0);  // Ensure the dropdown opens immediately
+
+    // Handle the selection change event
+    select.addEventListener('change', function() {
+        const newValue = select.value;
+
+        // Track the change in the log (store original and modified value)
+        changesLog.push({
+            bookTitle: span.closest('.book').querySelector('strong').textContent,  // Get the book's title
+            type: type,  // Type of change (author, age_range, tags)
+            originalValue: currentValue,
+            newValue: newValue
+        });
+
+        localStorage.setItem('changesLog', JSON.stringify(changesLog));  // Store the changes in localStorage
+
+        onChange(newValue);  // Update the book's data
+        editCount += 1;  // Increment edit count
+        localStorage.setItem('editCount', editCount);  // Save to localStorage
+
+        // Revert to the selected value after selection
+        span.textContent = newValue;
+        span.style.cursor = 'pointer';  // Restore cursor style
+    });
+
+    // Prevent the dropdown from closing prematurely
+    select.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Handle blur event to close dropdown without selection
+    select.addEventListener('blur', function() {
+        const newValue = select.value || currentValue;
+        span.textContent = newValue;  // Revert to the current or selected value
+        span.style.cursor = 'pointer';
+    });
+}
+
+function aggregateTraits() {
+    // Calculate trait scores for set 1 books
+    const traitScores = {
+        age_range: {},
+        author: {},
+        tags: {}
+    };
+
+    // Aggregate the scores based on the updated set1Books
+    set1Books.forEach(book => {
+        // Age Range score
+        if (!traitScores.age_range[book.age_range]) {
+            traitScores.age_range[book.age_range] = 0;
+        }
+        traitScores.age_range[book.age_range] += weights.age_range;
+
+        // Author score
+        if (!traitScores.author[book.author]) {
+            traitScores.author[book.author] = 0;
+        }
+        traitScores.author[book.author] += weights.author;
+
+        // Tags score
+        book.tags.forEach(tag => {
+            if (!traitScores.tags[tag]) {
+                traitScores.tags[tag] = 0;
+            }
+            traitScores.tags[tag] += weights.tags;
+        });
+    });
+
+    return traitScores;
+}
+
+function getRecommendation() {
+    // Find recommended book based on set 1 scores
+    const traits = aggregateTraits();  // Get updated traits from set1Books
+    let bestScore = -1;
+    let bestBook = null;
+    let set2Scores = [];
+
+    // Compare each book in Set 2 to the updated traits from Set 1
+    set2Books.forEach(book => {
+        let score = 0;
+
+        // Age Range comparison
+        if (traits.age_range[book.age_range]) {
+            score += traits.age_range[book.age_range];
+        }
+
+        // Author comparison
+        if (traits.author[book.author]) {
+            score += traits.author[book.author];
+        }
+
+        // Tags comparison
+        book.tags.forEach(tag => {
+            if (traits.tags[tag]) {
+                score += traits.tags[tag];
+            }
+        });
+
+        // Store scores for each book in Set 2
+        set2Scores.push({ book, score });
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestBook = book;
+        }
+    });
+
+    // Store the recommendation and scores
+    localStorage.setItem('recommendation', JSON.stringify(bestBook));
+    localStorage.setItem('set2Scores', JSON.stringify(set2Scores));
+    localStorage.setItem('traits', JSON.stringify(traits));
+
+    // Redirect to results page
+    window.location.href = '../activities/activity2results.html';
+}
+
+
+    // Initialize the activity
+    randomizeBooks();
+    displayBooks();
+</script>
+</body>
+</html>

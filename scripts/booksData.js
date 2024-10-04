@@ -1,0 +1,27 @@
+const books =  [
+{"title": "White Fang","image": "../Images/WhiteFang.jpg","author": "J. London","age_range": "Middle School","tags": ["Adventure", "Nature"]},
+{"title": "Harry Potter","image": "../Images/HarryPotter.jpg","author": "J.K. Rowling","age_range": "Middle School","tags": ["Fantasy", "Magic"]},
+{"title": "To Kill A Mockingbird","image": "../Images/Mockingbird.jpeg","author": "H. Lee","age_range": "High School","tags": ["Historical", "Social Justice"]},
+{"title": "Jurrasic Park","image": "../Images/Jurrasic.jpg","author": "M. Crichton","age_range": "Adult","tags": ["Science Fiction", "Adventure"]},
+{"title": "The Hunger Games","image": "../Images/Hunger.jpg","author": "S.Collins","age_range": "High School","tags": ["Dystopian", "Adventure"]},
+{"title": "The Great Gatsby","image": "../Images/Gatsby.jpg","author": "F.S. Fitzgerald","age_range": "High School","tags": ["Classic", "Drama"]},
+{"title": "1984","image": "../Images/1984.jpg","author": "G. Orwell","age_range": "High School","tags": ["Dystopian", "Political"]},
+{"title": "The Hobbit","image": "../Images/Hobbit.jpg","author": "J.R.R Tolkien","age_range": "Middle School","tags": ["Fantasy", "Adventure"]},
+{"title": "Catcher In The Rye","image": "../Images/Catcher.jpg","author": "J.D. Salinger","age_range": "High School","tags": ["Drama", "Coming-of-Age"]},
+{"title": "Lord of the Rings","image": "../Images/LOTR.jpg","author": "J.R.R. Tolkien","age_range": "High School","tags": ["Fantasy", "Epic"]},
+{"title": "Pride and Prejudice","image": "../Images/Pride.jpg","author": "J. Austen","age_range": "Adult","tags": ["Romance", "Classic"]},
+{"title": "The Lightning Thief","image": "../Images/Lightning.jpeg","author": "R. Riordan","age_range": "Middle School","tags": ["Fantasy", "Adventure"]},
+{"title": "Fahrenheit 451","image": "../Images/451.jpg","author": "R. Bradbury","age_range": "High School","tags": ["Dystopian", "Science Fiction"]},
+{"title": "Charlotte's Web","image": "../Images/Charlotte.jpg","author": "E.B. White","age_range": "Elementary","tags": ["Friendship", "Nature"]},
+{"title": "The Outsiders","image": "../Images\Outsiders.jpeg","author": "S.E. Hinton","age_range": "Middle School","tags": ["Coming-of-Age", "Drame"]},
+{"title": "The Old Man and the Sea","image": "../Images/OMAS.jpeg","author": "E. Hemmingway","age_range": "Adult","tags": ["Classic", "Adventure"]},
+{"title": "The Help","image": "../Images/Help.jpeg","author": "K. Stockett","age_range": "Adult","tags": ["Historical", "Social Justice"]},
+{"title": "Where the Crawdads Sing","image": "../Images/Crawdads.jpeg","author": "D. Owens","age_range": "Adult","tags": ["Mystery", "Nature"]},
+{"title": "Matilda","image": "../Images/Matilda.jpeg","author": "R. Dahl","age_range": "Elementary","tags": ["Fantasy", "Humour"]},
+{"title": "The BFG","image": "../Images/BFG.jpeg","author": "R. Dahl","age_range": "Elementary","tags": ["Fantasy", "Adventure"]},
+{"title": "The Cat in the Hat","image": "../Images/CITH.jpeg","author": "D. Seuss","age_range": "Elementary","tags": ["Humour", "Classic"]},
+{"title": "Post Office","image": "../Images/Post.jpeg","author": "C. Bukowski","age_range": "Adult","tags": ["Humour", "Drama"]},
+{"title": "Slughterhouse Five","image": "../Images/Slaughterhouse.jpeg","author": "K. Vonnegut","age_range": "Adult","tags": ["Science Fiction", "War"]},
+{"title": "Cat's Cradle","image": "../Images/Cats.jpeg","author": "K. Vonnegut","age_range": "Adult","tags": ["Science Fiction", "Satire"]}
+]; 
+// This script saves the book data in localStorage

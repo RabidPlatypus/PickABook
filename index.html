@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pick-A-Book: Title Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2b1055, #7597de, #eebd89);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 80px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: #FFDD57;
+            text-shadow: 3px 3px 0px #FF5733, 6px 6px 0px #FF3E00;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 60%;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+            color: white;
+            background-color: #FF5733;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        button:hover:enabled {
+            background-color: #FF3E00;
+        }
+
+        .error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pick-A-Book</h1>
+        <p>
+            Many of the most used apps today use recommender systems to recommend new content to users 
+            based on their previous history. This can be seen in many apps such as YouTube, TikTok, and Instagram, 
+            where this system is commonly known as "the algorithm". Sometimes, people take advantage of the algorithm 
+            on these sites to get their content recommended to users when it shouldn't be.
+        </p>
+        <p>
+            In this app, we let you take on the role of "the algorithm" and make a recommendation based on a set of books 
+            which the user has read before. You will then be challenged to change the information from the user data to 
+            force it to make a different recommendation.
+        </p>
+        <input type="text" id="username" placeholder="Enter your username">
+        <div class="error" id="error-message">Please enter a username to continue!</div>
+        <button id="startButton" disabled>Start Activity</button>
+    </div>
+
+    <script>
+        const usernameInput = document.getElementById('username');
+        const startButton = document.getElementById('startButton');
+        const errorMessage = document.getElementById('error-message');
+
+        // Enable button only if username is entered
+        usernameInput.addEventListener('input', () => {
+            if (usernameInput.value.trim() !== "") {
+                startButton.disabled = false;
+                errorMessage.style.display = 'none';
+            } else {
+                startButton.disabled = true;
+            }
+        });
+
+        // Handle button click to start activity
+        startButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if (username) {
+                localStorage.setItem('username', username);  // Save the username in localStorage
+                window.location.href = 'activities/activity2.html';     // Redirect to the activity page
+            } else {
+                errorMessage.style.display = 'block';  // Show error if username is empty
+            }
+        });
+    </script>
+</body>
+</html>

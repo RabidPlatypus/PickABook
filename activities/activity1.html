@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation Activity 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141E30, #243B55);
+            color: white;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+        }
+        .books-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            margin-bottom: 50px;
+        }
+        .book {
+            margin: 10px;
+            text-align: center;
+            border: 2px solid white;
+            padding: 10px;
+            width: 150px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        /*.highlight {
+            border-color: lime;
+        }*/
+        .editable {
+            display: none;
+        }
+        .button {
+            background-color: limegreen;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .radio-container {
+            margin-top: 10px; /* Adjust the spacing as needed */
+            text-align: center; /* Center the radio button */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Activity 1: Make A Book Recommendation</h1>
+
+    <h2>Based on the following books that the user has read in Set 1... </h2>
+    <div class="books-container" id="set1">
+        <!-- Books from Set 1 will appear here -->
+    </div>
+
+    <h2>What book from Set 2 would you recommend they read next?:</h2>
+    <div class="books-container" id="set2">
+        <!-- Books from Set 2 will appear here -->
+    </div>
+
+    <button id="recommend-button" class="button" onclick="displayRecommendation()">Make Recommendation</button>
+</div>
+
+<script src="../scripts/booksData.js"></script>
+
+<script>
+
+    let set1Books = [];
+    let set2Books = [];
+    
+    const weights = {
+        age_range: 3,
+        author: 1,
+        tags: 2,
+    };
+
+    function randomizeBooks() {
+        let shuffled = books.sort(() => Math.random() - 0.5);
+        set1Books = shuffled.slice(0, 8);
+        set2Books = shuffled.slice(8, 13); // Next 5 books for Set 2
+    }
+
+    function encodeFeatures(book) {
+        const ageRangeIndex = {
+            "Elementary": 0,
+            "Middle School": 1,
+            "High School": 2,
+            "Adult": 3
+        };
+
+        const tags = [...new Set(books.flatMap(b => b.tags))];
+        const features = Array(3 + tags.length).fill(0);
+
+        features[ageRangeIndex[book.age_range]] = 1;
+
+        book.tags.forEach(tag => {
+            const tagIndex = tags.indexOf(tag);
+            if (tagIndex !== -1) {
+                features[3 + tagIndex] = 1;
+            }
+        });
+        return features;
+    }
+
+    function cosineSimilarity(vecA, vecB) {
+        const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+        const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+        const magnitudeB = Math.sqrt(vecB.reduce((sum, a) => sum + a * a, 0));
+        return dotProduct / (magnitudeA * magnitudeB);
+    }
+
+    function getRecommendation() {
+    // Create a user profile based on age range and tags of all Set 1 books
+    const userProfile = set1Books
+        .map(book => encodeFeatures(book))  // Get feature vectors for all Set 1 books
+        .reduce((sum, features) => 
+            sum.map((value, i) => value + features[i]), 
+            Array(3 + books.flatMap(b => b.tags).length).fill(0)
+        ) // Sum all feature vectors
+        .map(value => value / set1Books.length); // Average the features
+
+    let bestMatch = { title: "", score: -1 };
+
+    // Find the best match in Set 2 by comparing to the user profile
+    set2Books.forEach(book => {
+        const bookFeatures = encodeFeatures(book);
+        const score = cosineSimilarity(userProfile, bookFeatures);
+
+        if (score > bestMatch.score) {
+            bestMatch = { title: book.title, score };
+        }
+    });
+
+    return bestMatch.title;  // Return the title of the best match
+    }
+
+    function displayRecommendation() {
+    const selectedBookTitle = Array.from(document.getElementsByName('recommendation'))
+        .find(input => input.checked)?.value;
+
+    if (!selectedBookTitle) {
+        alert("Please select a book.");
+        return;
+    }
+
+    // Get the algorithm's recommended book based on user profile
+    const recommendedBookTitle = getRecommendation();
+
+    // Store both the user's selected book and the algorithm's recommendation
+    const selectedBook = books.find(book => book.title === selectedBookTitle);
+    const recommendedBook = books.find(book => book.title === recommendedBookTitle);
+
+    localStorage.setItem('selectedBook', JSON.stringify(selectedBook));
+    localStorage.setItem('recommendedBook', JSON.stringify(recommendedBook));
+
+    // Redirect to results page
+    window.location.href = "../activities/activity1results.html";
+    }
+
+
+    function displayBooks() {
+        const set1Container = document.getElementById('set1');
+        const set2Container = document.getElementById('set2');
+
+        // Display books in Set 1 with editable metadata
+        set1Books.forEach(book => {
+            const bookDiv = createEditableBookDiv(book);
+            set1Container.appendChild(bookDiv);
+        });
+
+        // Display the highlighted book in Set 2
+        set2Books.forEach((book, index) => {
+            const bookDiv = createBookDiv(book, index === 0);
+            set2Container.appendChild(bookDiv);
+        });
+    }
+
+    function createBookDiv(book, highlighted = false) {
+        const bookDiv = document.createElement('div');
+        bookDiv.classList.add('book');
+        if (highlighted) bookDiv.classList.add('highlight');
+        bookDiv.innerHTML = `
+            <label for="${book.title.replace(/\s+/g, '-')}">
+                <img src="${book.image}" alt="${book.title}" width="100"><br>
+                <strong>${book.title}</strong><br>
+                Author: <span class="data">${book.author}</span><br>
+                Age: <span class="data">${book.age_range}</span><br>
+                Tags: ${book.tags.map(tag => `<span class="data">${tag}</span>`).join('<br>')}
+        </label>
+        <div class="radio-container">
+            <input type="radio" name="recommendation" value="${book.title}" id="${book.title.replace(/\s+/g, '-')}">
+        </div>
+        `;
+        return bookDiv;
+    }
+
+    function createEditableBookDiv(book) {
+        const bookDiv = document.createElement('div');
+        bookDiv.classList.add('book');
+
+        bookDiv.innerHTML = `
+            <img src="${book.image}" alt="${book.title}" width="100"><br>
+            <strong>${book.title}</strong><br>
+            <div>Author: <span class="data" onclick="editField(this)">${book.author}</span></div>
+            <div>Age: <span class="data" onclick="editField(this)">${book.age_range}</span></div>
+            <div>Tags: ${book.tags.map(tag => `<span class="data" onclick="editField(this)">${tag}</span>`).join('<br>')}</div>
+        `;
+
+        return bookDiv;
+    }
+
+
+    randomizeBooks();
+    displayBooks();
+</script>
+</body>
+</html>

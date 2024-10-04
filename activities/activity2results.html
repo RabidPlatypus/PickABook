@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141E30, #243B55);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            max-width: 100%;
+            padding: 10px;
+            margin: auto;
+        }
+        .section {
+            flex: 1;
+            padding: 10px;
+            max-width: 600px;
+            min-width: 300px;
+        }
+        h2 {
+            font-size: 20px;
+        }
+        p, li {
+            font-size: 14px;
+        }
+        img {
+            max-width: 120px;
+            margin: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .button {
+            background-color: limegreen;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+    
+</head>
+<body>
+    <h1>Your Recommended Book</h1>
+    <div id="result"></div>
+    <button class="button" onclick="restartActivity()">Restart Activity</button>
+    <button class="button" id="doneButton">DONE</button>
+
+
+    <script>
+        function displayResult() {
+            const recommendedBook = JSON.parse(localStorage.getItem('recommendation')); // Retrieve book recommendation
+            const set2Scores = JSON.parse(localStorage.getItem('set2Scores')); // Retrieve scores for set 2 books
+            const traits = JSON.parse(localStorage.getItem('traits')); // Retrieve trait scores
+            const editCount = localStorage.getItem('editCount') || 0; // Retrieve total edits
+    
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear the result area before rendering
+    
+            // Explanation with trait scores and one empty line between sections
+            let explanationHTML = `
+                <div class="section">
+                    <h2>How the AI Picked a Book</h2>
+                    <p>The AI calculates scores for each book by comparing three traits:</p>
+                    <ul>
+                        <li><strong>Age Range</strong>: Matches earn <strong>3 points</strong>.</li>
+                        <li><strong>Author</strong>: Matches earn <strong>1 point</strong>.</li>
+                        <li><strong>Tags</strong>: Each matching tag earns <strong>2 points</strong>.</li>
+                    </ul>
+    
+                    <p>The AI compares the books you edited to the target books, and the one with the highest score is recommended.</p>
+    
+                    <br> <!-- Empty line for better readability -->
+                    <p><strong>Set 1's Total Trait Scores:</strong></p>
+                    <ul>
+                        <li>Age Range Matches: ${JSON.stringify(traits.age_range)}</li>
+                        <li>Author Matches: ${JSON.stringify(traits.author)}</li>
+                        <li>Tag Matches: ${JSON.stringify(traits.tags)}</li>
+                    </ul>
+    
+                    <br> <!-- Another empty line -->
+                    <p><strong>Total Edits You Made: ${editCount}</strong></p>
+                </div>
+            `;
+    
+            // Check if the recommended book was the target
+            const targetBook = set2Scores[0].book;
+            const isTargetRecommended = recommendedBook && recommendedBook.title === targetBook.title;
+            localStorage.setItem('success', isTargetRecommended); 
+            const successMessage = isTargetRecommended
+                ? "<p>🎉 Success! You recommended the target book.</p>"
+                : "<p>❌ You did not recommend the target book.</p>";
+    
+            // Recommended Book with success message before the image
+            let recommendedBookHTML = recommendedBook ? `
+                <div class="section">
+                    <h2>Recommended Book</h2>
+                    ${successMessage}
+                    <img src="${recommendedBook.image}" alt="${recommendedBook.title}"><br>
+                    <strong>${recommendedBook.title}</strong><br>
+                    Author: ${recommendedBook.author}<br>
+                    Age Range: ${recommendedBook.age_range}<br>
+                    Tags: ${recommendedBook.tags.join(', ')}
+                </div>
+            ` : `<div class="section">No recommendation available.</div>`;
+    
+            // Display Set 2 Book Scores
+            let set2HTML = `<div class="section"><h2>Book Scores</h2><ul>`;
+            set2Scores.forEach(({book, score}) => {
+                set2HTML += `
+                    <li>
+                        <strong>${book.title}</strong><br>
+                        Score: ${score} points
+                    </li><br>
+                `;
+            });
+            set2HTML += `</ul></div>`;
+    
+            // Display everything in a flex container with 3 columns
+            resultDiv.innerHTML = `<div class="container">${explanationHTML}${recommendedBookHTML}${set2HTML}</div>`;
+        }
+    
+        // Function to handle the restart activity and save the current attempt's data to the CSV
+        function restartActivity() {
+            // Retrieve the accumulated CSV content from localStorage
+            let csvContent = localStorage.getItem('csvContent') || "";  // CSV headers
+            let attemptNumber = parseInt(localStorage.getItem('attemptNumber')) || 0;  // Get the current attempt number
+            attemptNumber += 1;  // Increment attempt number for the new retry
+            localStorage.setItem('attemptNumber', attemptNumber);  // Save the updated attempt number
+            // Retrieve the current session changes log
+            const changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];
+            const targetBook = JSON.parse(localStorage.getItem('recommendation'));  // Get the target book
+            const isTargetRecommended = JSON.parse(localStorage.getItem('success'));
+
+            // Add a blank line to separate attempts if not the first one
+            if (attemptNumber > 1) {
+                csvContent += "\n";  // Add a blank line between attempts
+            }
+            csvContent += "Attempt,Book Title,Type,Original Value,New Value\n";
+            // Add the current attempt's changes log to the CSV
+            changesLog.forEach(change => {
+                csvContent += `${attemptNumber},${change.bookTitle},${change.type},${change.originalValue},${change.newValue}\n`;
+            });
+
+            // Add the target book traits for this attempt, if available
+            if (targetBook) {
+                csvContent += `\nAttempt ${attemptNumber},Target Book Traits:,${isTargetRecommended}\n`;
+                csvContent += `Title,Author,Age Range,Tags\n`;
+                csvContent += `${targetBook.title},${targetBook.author},${targetBook.age_range},${targetBook.tags.join('; ')}\n`;
+            }
+
+            // Store the updated CSV content in localStorage
+            localStorage.setItem('csvContent', csvContent);
+
+            // Clear session-specific data (but keep CSV content and attempt number intact)
+            localStorage.removeItem('recommendation');  // Clear the stored recommendation
+            localStorage.removeItem('set2Scores');      // Clear book scores
+            localStorage.removeItem('traits');          // Clear traits data
+            localStorage.removeItem('editCount');       // Clear edit count
+            localStorage.removeItem('changesLog');      // Clear the session changes log (session specific)
+
+            // Redirect to the main activity page to restart
+            window.location.href = '../activities/activity2.html';
+        }
+        // Initialize the result display
+        displayResult();
+        // Function to handle the "Done" button click
+        document.getElementById('doneButton').addEventListener('click', function() {
+            // Retrieve the accumulated CSV content from localStorage
+            let csvContent = localStorage.getItem('csvContent') || "";  // CSV headers
+
+            // Retrieve the current session changes log
+            const changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];
+            const targetBook = JSON.parse(localStorage.getItem('recommendation'));  // Get the target book
+            const isTargetRecommended = JSON.parse(localStorage.getItem('success'));
+            // Retrieve the attempt number (this should already be set correctly by restartActivity)
+            let attemptNumber = parseInt(localStorage.getItem('attemptNumber')) || 1;  // Default to 1 if it doesn't exist
+              // Increment attempt number for the new retry
+            // Add a blank line to separate attempts if not the first one
+            if (attemptNumber > 1) {
+                csvContent += "\n";  // Add a blank line between attempts
+                attemptNumber += 1;
+            }
+            csvContent += "Attempt,Book Title,Type,Original Value,New Value\n";
+            // Add the current attempt's changes log to CSV
+            changesLog.forEach(change => {
+                csvContent += `${attemptNumber},${change.bookTitle},${change.type},${change.originalValue},${change.newValue}\n`;
+            });
+
+            // Add the target book traits for this attempt, if available
+            if (targetBook) {
+                csvContent += `\nAttempt ${attemptNumber},Target Book Traits:,${isTargetRecommended}\n`;
+                csvContent += `Title,Author,Age Range,Tags\n`;
+                csvContent += `${targetBook.title},${targetBook.author},${targetBook.age_range},${targetBook.tags.join('; ')}\n`;
+            }
+
+            // Store the updated CSV content in localStorage
+            localStorage.setItem('csvContent', csvContent);
+            const username = localStorage.getItem('username') || 'NA';
+            // Create the CSV blob and trigger the download
+            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(csvBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `${username}_activity2results.csv`;  // Download CSV
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // Now, clear all data in localStorage to reset for the next usage
+            localStorage.clear()
+
+            
+            // Redirect the user back to the main activity page
+            window.location.href = '../index.html';  // Redirect to the main activity page
+        });
+</script>
+
+
+
+    </script>   
+    
+</body>
+</html>
