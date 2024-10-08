@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<script src="booksData.js"></script>
+<script src="../scripts/booksData.js"></script>
 <script>
     function findBookByTitle(title) {
         return books.find(book => book.title === title);
@@ -133,8 +133,9 @@
 
     // Store CSV data in localStorage for later use
     function storeCSVData(userBook, aiBook) {
-        const csvData = prepareCSVData(userBook, aiBook);
-        localStorage.setItem('recommendationCSV', csvData);
+        let csvData = prepareCSVData(userBook, aiBook);
+        csvData += "\n\n"; 
+        localStorage.setItem('csvContent', csvData);
     }
     
     // Retrieve user and algorithm selections from localStorage
@@ -154,7 +155,7 @@
 
     // Add event listener to the button for navigation
     document.getElementById('activity2-button').addEventListener('click', function() {
-        window.location.href = 'activity2.html'; // Redirect to activity2.html
+        window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
     });
 </script>
 
