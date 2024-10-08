@@ -13,7 +13,7 @@ const books =  [
 {"title": "The Lightning Thief","image": "../Images/Lightning.jpeg","author": "R. Riordan","age_range": "Middle School","tags": ["Fantasy", "Adventure"]},
 {"title": "Fahrenheit 451","image": "../Images/451.jpg","author": "R. Bradbury","age_range": "High School","tags": ["Dystopian", "Science Fiction"]},
 {"title": "Charlotte's Web","image": "../Images/Charlotte.jpg","author": "E.B. White","age_range": "Elementary","tags": ["Friendship", "Nature"]},
-{"title": "The Outsiders","image": "../Images\Outsiders.jpeg","author": "S.E. Hinton","age_range": "Middle School","tags": ["Coming-of-Age", "Drame"]},
+{"title": "The Outsiders","image": "../Images/Outsiders.jpeg","author": "S.E. Hinton","age_range": "Middle School","tags": ["Coming-of-Age", "Drame"]},
 {"title": "The Old Man and the Sea","image": "../Images/OMAS.jpeg","author": "E. Hemmingway","age_range": "Adult","tags": ["Classic", "Adventure"]},
 {"title": "The Help","image": "../Images/Help.jpeg","author": "K. Stockett","age_range": "Adult","tags": ["Historical", "Social Justice"]},
 {"title": "Where the Crawdads Sing","image": "../Images/Crawdads.jpeg","author": "D. Owens","age_range": "Adult","tags": ["Mystery", "Nature"]},
