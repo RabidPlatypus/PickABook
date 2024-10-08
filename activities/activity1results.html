@@ -3,91 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 1 results</title>
+    <title>Recommendation Results</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #141E30, #243B55);
+            background: linear-gradient(to right, #30142c, #243B55);
             color: white;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
         }
-        .wrapper {
-            display: flex;
-            align-items: flex-start; /* Align items to the top */
-            justify-content: flex-start; /* Align the content to the left */
-            width: 70%; /* Adjust to control how much space the content takes */
-            margin-left: 50px; /* Add some space from the left edge */
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: left; /* Align content to the left for the books */
         }
-        .content {
+        h1 {
+            text-align: center; /* Center the header */
+        }
+        .books-container {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Align the content to the left */
-            width: 100%;
+            justify-content: flex-start; /* Align books to the left */
+            flex-wrap: wrap;
+            margin-bottom: 50px;
         }
         .book {
-            margin: 20px 0;
-            text-align: left;
+            margin: 20px;
+            text-align: center;
             border: 2px solid white;
             padding: 10px;
-            width: 150px;
+            width: 200px;
             background-color: rgba(255, 255, 255, 0.1);
         }
         img {
-            width: 100px;
+            width: 150px;
             height: auto;
         }
-        h1 {
-            margin-bottom: 10px;
-        }
         .separator {
-            border-left: 2px solid white;
-            height: 100%;
-            margin-left: 20px;
+            border-left: 3px solid white;
+            height: 1000px; 
+            position: absolute;
+            left: 50%;
+            margin-left: -3px;
+            top: 80px; /* Adjust this value to position it under the header */
+        }
+        .button-container {
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center the button */
+            margin-top: 20px; /* Space above the button */
+        }
+        .button {
+            background-color: limegreen;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
-<body> 
+<body>
 
-    <div class="wrapper">
-        <!-- Left-aligned content (Your Pick and AI's Pick) -->
-        <div class="content">
-            <!-- Your Pick Section -->
-            <h1>Your Pick:</h1>
-            <div id="selected-book" class="book"></div>
+<div class="container">
+    <h1>Recommendation Results</h1>
 
-            <!-- AI's Pick Section -->
-            <h1>AI's Pick:</h1>
-            <div id="recommended-book" class="book"></div>
-        </div>
-
-        <!-- Separator Column -->
-        <div class="separator"></div>
+    <h2>Your Pick:</h2>
+    <div class="books-container" id="userSelection">
+        <!-- User's selected book will appear here -->
     </div>
 
-    <script>
-        // Get the selected book and recommended book from localStorage
-        const selectedBook = JSON.parse(localStorage.getItem('selectedBook'));
-        const recommendedBook = JSON.parse(localStorage.getItem('recommendedBook'));
+    <div class="separator"></div>
+
+    <h2>AI's Pick:</h2>
+    <div class="books-container" id="algorithmRecommendation">
+        <!-- Algorithm's recommended book will appear here -->
+    </div>
+
+    <!-- Button container to center the button -->
+    <div class="button-container">
+        <button class="button" id="activity2-button">Go to Activity 2</button>
+    </div>
+</div>
+
+<script src="booksData.js"></script>
+<script>
+    function findBookByTitle(title) {
+        return books.find(book => book.title === title);
+    }
+
+    function displayBook(containerId, book) {
+        const container = document.getElementById(containerId);
+        const bookDiv = document.createElement('div');
+        bookDiv.classList.add('book');
+        bookDiv.innerHTML = `
+            <img src="${book.image}" alt="${book.title}">
+            <h3>${book.title}</h3>
+            <p>Author: ${book.author}</p>
+            <p>Age Range: ${book.age_range}</p>
+            <p>Tags: ${book.tags.join(', ')}</p>
+        `;
+        container.appendChild(bookDiv);
+    }
+
+    // Prepare CSV data as a string
+    function prepareCSVData(userBook, aiBook) {
+        // Create header
+        const header = ['User Pick', 'User Author', 'User Age Range', 'User Tags', 
+                        'AI Pick', 'AI Author', 'AI Age Range', 'AI Tags'];
+        
+        // Get user selected book details
+        const userBookData = [
+            userBook.title,
+            userBook.author,
+            userBook.age_range,
+            userBook.tags.join(', ')
+        ];
+
+        // Get algorithm recommended book details
+        const aiBookData = [
+            aiBook.title,
+            aiBook.author,
+            aiBook.age_range,
+            aiBook.tags.join(', ')
+        ];
+
+        // Combine header and data
+        const csvRows = [header, [...userBookData, ...aiBookData]];
+        
+        // Convert array to CSV string
+        return csvRows.map(row => row.join(',')).join('\n');
+    }
+
+    // Store CSV data in localStorage for later use
+    function storeCSVData(userBook, aiBook) {
+        const csvData = prepareCSVData(userBook, aiBook);
+        localStorage.setItem('recommendationCSV', csvData);
+    }
     
-        // Function to display book details in a specific container
-        function displayBook(book, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `
-                <img src="${book.image}" alt="${book.title}"><br>
-                <strong>${book.title}</strong><br>
-                Author: ${book.author}<br>
-                Age Range: ${book.age_range}<br>
-                Tags: ${book.tags.join(', ')}
-            `;
-        }
-    
-        // Display the selected book and the recommended book
-        displayBook(selectedBook, 'selected-book');
-        displayBook(recommendedBook, 'recommended-book');
+    // Retrieve user and algorithm selections from localStorage
+    const userSelectionTitle = localStorage.getItem('userSelection');
+    const algorithmRecommendationTitle = localStorage.getItem('algorithmRecommendation');
+
+    // Find the books based on their titles
+    const userSelectedBook = findBookByTitle(userSelectionTitle);
+    const algorithmRecommendedBook = findBookByTitle(algorithmRecommendationTitle);
+
+    // Display the books
+    displayBook('userSelection', userSelectedBook);
+    displayBook('algorithmRecommendation', algorithmRecommendedBook);
+
+    // Store CSV data in localStorage for future download
+    storeCSVData(userSelectedBook, algorithmRecommendedBook);
+
+    // Add event listener to the button for navigation
+    document.getElementById('activity2-button').addEventListener('click', function() {
+        window.location.href = 'activity2.html'; // Redirect to activity2.html
+    });
 </script>
 
 </body>
