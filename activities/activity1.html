@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background: linear-gradient(to right, #141E30, #243B55);
+            background: linear-gradient(to right, #30142c, #243B55);
             color: white;
         }
         .container {
@@ -29,9 +29,6 @@
             width: 150px;
             background-color: rgba(255, 255, 255, 0.1);
         }
-        /*.highlight {
-            border-color: lime;
-        }*/
         .editable {
             display: none;
         }
@@ -68,102 +65,76 @@
     <button id="recommend-button" class="button" onclick="displayRecommendation()">Make Recommendation</button>
 </div>
 
-<script src="../scripts/booksData.js"></script>
+<script src="booksData.js"></script>
 
 <script>
 
-    let set1Books = [];
-    let set2Books = [];
-    
-    const weights = {
-        age_range: 3,
-        author: 1,
-        tags: 2,
-    };
-
     function randomizeBooks() {
         let shuffled = books.sort(() => Math.random() - 0.5);
-        set1Books = shuffled.slice(0, 8);
+        set1Books = shuffled.slice(0, 8); // 8 books for Set 1
         set2Books = shuffled.slice(8, 13); // Next 5 books for Set 2
     }
 
-    function encodeFeatures(book) {
-        const ageRangeIndex = {
-            "Elementary": 0,
-            "Middle School": 1,
-            "High School": 2,
-            "Adult": 3
-        };
+    const ageRangeMap = {
+        "Elementary": [1, 0, 0, 0],
+        "Middle School": [0, 1, 0, 0],
+        "High School": [0, 0, 1, 0],
+        "Adult": [0, 0, 0, 1]
+    };
 
-        const tags = [...new Set(books.flatMap(b => b.tags))];
-        const features = Array(3 + tags.length).fill(0);
+    const tagSet = [
+        "Adventure", "Fantasy", "Science Fiction", "Dystopian", "Romance", 
+        "Drama", "Classic", "Nature", "Friendship", "Political", "Epic", 
+        "Social Justice", "Philosophy"
+    ];
 
-        features[ageRangeIndex[book.age_range]] = 1;
-
-        book.tags.forEach(tag => {
-            const tagIndex = tags.indexOf(tag);
-            if (tagIndex !== -1) {
-                features[3 + tagIndex] = 1;
-            }
-        });
-        return features;
+    // Vector representation of a book
+    function bookToVector(book) {
+        const ageVec = ageRangeMap[book.age_range] || [0, 0, 0, 0];
+        const tagVec = tagSet.map(tag => book.tags.includes(tag) ? 1 : 0);
+        return [...ageVec, ...tagVec];
     }
 
+    // Cosine similarity between two vectors
     function cosineSimilarity(vecA, vecB) {
-        const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
-        const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
-        const magnitudeB = Math.sqrt(vecB.reduce((sum, a) => sum + a * a, 0));
-        return dotProduct / (magnitudeA * magnitudeB);
+        const dotProduct = vecA.reduce((sum, val, i) => sum + val * vecB[i], 0);
+        const magA = Math.sqrt(vecA.reduce((sum, val) => sum + val * val, 0));
+        const magB = Math.sqrt(vecB.reduce((sum, val) => sum + val * val, 0));
+        return dotProduct / (magA * magB);
     }
 
-    function getRecommendation() {
-    // Create a user profile based on age range and tags of all Set 1 books
-    const userProfile = set1Books
-        .map(book => encodeFeatures(book))  // Get feature vectors for all Set 1 books
-        .reduce((sum, features) => 
-            sum.map((value, i) => value + features[i]), 
-            Array(3 + books.flatMap(b => b.tags).length).fill(0)
-        ) // Sum all feature vectors
-        .map(value => value / set1Books.length); // Average the features
+// Recommend the best book from Set 2 based on Set 1
+    function recommendBook(set1, set2) {
+        const set1Vectors = set1.map(bookToVector);
 
-    let bestMatch = { title: "", score: -1 };
+        // Calculate the average similarity for each book in Set 2
+        const recommendations = set2.map(book2 => {
+            const book2Vec = bookToVector(book2);
+            const avgSimilarity = set1Vectors
+                .map(vec1 => cosineSimilarity(vec1, book2Vec))
+                .reduce((sum, sim) => sum + sim, 0) / set1.length;
+            return { book: book2, similarity: avgSimilarity };
+        });
 
-    // Find the best match in Set 2 by comparing to the user profile
-    set2Books.forEach(book => {
-        const bookFeatures = encodeFeatures(book);
-        const score = cosineSimilarity(userProfile, bookFeatures);
-
-        if (score > bestMatch.score) {
-            bestMatch = { title: book.title, score };
-        }
-    });
-
-    return bestMatch.title;  // Return the title of the best match
+        // Return the book with the highest similarity
+        recommendations.sort((a, b) => b.similarity - a.similarity);
+        return recommendations[0].book;
     }
 
+    // Function to handle recommendation button click
     function displayRecommendation() {
-    const selectedBookTitle = Array.from(document.getElementsByName('recommendation'))
-        .find(input => input.checked)?.value;
+        const userSelection = document.querySelector('input[name="recommendation"]:checked').value;
 
-    if (!selectedBookTitle) {
-        alert("Please select a book.");
-        return;
-    }
+        // Pass set1Books and set2Books to the recommendBook function
+        const algorithmRecommendation = recommendBook(set1Books, set2Books);
 
-    // Get the algorithm's recommended book based on user profile
-    const recommendedBookTitle = getRecommendation();
+        // Store both the user's and algorithm's choice in localStorage
+        localStorage.setItem('userSelection', userSelection);
+        localStorage.setItem('algorithmRecommendation', algorithmRecommendation.title);
 
-    // Store both the user's selected book and the algorithm's recommendation
-    const selectedBook = books.find(book => book.title === selectedBookTitle);
-    const recommendedBook = books.find(book => book.title === recommendedBookTitle);
-
-    localStorage.setItem('selectedBook', JSON.stringify(selectedBook));
-    localStorage.setItem('recommendedBook', JSON.stringify(recommendedBook));
-
-    // Redirect to results page
-    window.location.href = "../activities/activity1results.html";
-    }
-
+        // Redirect to the results page
+        window.location.href = 'activity1results.html';
+}
 
     function displayBooks() {
         const set1Container = document.getElementById('set1');
@@ -193,10 +164,10 @@
                 Author: <span class="data">${book.author}</span><br>
                 Age: <span class="data">${book.age_range}</span><br>
                 Tags: ${book.tags.map(tag => `<span class="data">${tag}</span>`).join('<br>')}
-        </label>
-        <div class="radio-container">
-            <input type="radio" name="recommendation" value="${book.title}" id="${book.title.replace(/\s+/g, '-')}">
-        </div>
+            </label>
+            <div class="radio-container">
+                <input type="radio" name="recommendation" value="${book.title}" id="${book.title.replace(/\s+/g, '-')}">
+            </div>
         `;
         return bookDiv;
     }
@@ -216,9 +187,9 @@
         return bookDiv;
     }
 
-
     randomizeBooks();
     displayBooks();
+
 </script>
 </body>
 </html>
