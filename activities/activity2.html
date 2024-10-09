@@ -278,87 +278,66 @@ function editField(span, type, options, onChange) {
     });
 }
 
-function aggregateTraits() {
-    // Calculate trait scores for set 1 books
-    const traitScores = {
-        age_range: {},
-        author: {},
-        tags: {}
+function bookToVector(book) {
+    const ageRangeMap = {
+        "Elementary": [1, 0, 0, 0],
+        "Middle School": [0, 1, 0, 0],
+        "High School": [0, 0, 1, 0],
+        "Adult": [0, 0, 0, 1]
     };
 
-    // Aggregate the scores based on the updated set1Books
-    set1Books.forEach(book => {
-        // Age Range score
-        if (!traitScores.age_range[book.age_range]) {
-            traitScores.age_range[book.age_range] = 0;
-        }
-        traitScores.age_range[book.age_range] += weights.age_range;
+    const tagSet = uniqueTags;
+    const authorSet = uniqueAuthors;
 
-        // Author score
-        if (!traitScores.author[book.author]) {
-            traitScores.author[book.author] = 0;
-        }
-        traitScores.author[book.author] += weights.author;
+    // Weights for different classes of data
+    const ageWeight = 3;
+    const tagWeight = 2;
+    const authorWeight = 1;
 
-        // Tags score
-        book.tags.forEach(tag => {
-            if (!traitScores.tags[tag]) {
-                traitScores.tags[tag] = 0;
-            }
-            traitScores.tags[tag] += weights.tags;
-        });
+    const ageVec = ageRangeMap[book.age_range].map(val => val * ageWeight) || [0, 0, 0, 0];
+    const tagVec = tagSet.map(tag => book.tags.includes(tag) ? 1 : 0).map(val => val * tagWeight);
+    const authorVec = uniqueAuthors.map(author => (book.author === author ? 1 : 0)).map(val => val * authorWeight);
+    return [...ageVec, ...tagVec,...authorVec];
+}
+
+// Cosine similarity between two vectors
+function cosineSimilarity(vecA, vecB) {
+        const dotProduct = vecA.reduce((sum, val, i) => sum + val * vecB[i], 0);
+        const magA = Math.sqrt(vecA.reduce((sum, val) => sum + val * val, 0));
+        const magB = Math.sqrt(vecB.reduce((sum, val) => sum + val * val, 0));
+        return dotProduct / (magA * magB);
+    }
+
+function recommendBook(set1, set2) {
+    const set1Vectors = set1.map(bookToVector);
+
+    const recommendations = set2.map(book2 => {
+        const book2Vec = bookToVector(book2);
+        const avgSimilarity = set1Vectors
+            .map(vec1 => cosineSimilarity(vec1, book2Vec))
+            .reduce((sum, sim) => sum + sim, 0) / set1.length;
+        return { book: book2, similarity: avgSimilarity };
     });
-
-    return traitScores;
+    localStorage.setItem('set2Scores', JSON.stringify(recommendations));
+    recommendations.sort((a, b) => b.similarity - a.similarity);
+    return recommendations[0].book;
 }
 
 function getRecommendation() {
-    // Find recommended book based on set 1 scores
-    const traits = aggregateTraits();  // Get updated traits from set1Books
-    let bestScore = -1;
-    let bestBook = null;
-    let set2Scores = [];
+    console.log("Set 1 Books: ", set1Books);
+    console.log("Set 2 Books: ", set2Books);
+    
+    if (set1Books.length === 0 || set2Books.length === 0) {
+        alert("Error: Books were not loaded correctly.");
+        return;
+    }
 
-    // Compare each book in Set 2 to the updated traits from Set 1
-    set2Books.forEach(book => {
-        let score = 0;
+    const recommendedBook = recommendBook(set1Books, set2Books);
+    console.log("Recommended Book: ", recommendedBook);
 
-        // Age Range comparison
-        if (traits.age_range[book.age_range]) {
-            score += traits.age_range[book.age_range];
-        }
-
-        // Author comparison
-        if (traits.author[book.author]) {
-            score += traits.author[book.author];
-        }
-
-        // Tags comparison
-        book.tags.forEach(tag => {
-            if (traits.tags[tag]) {
-                score += traits.tags[tag];
-            }
-        });
-
-        // Store scores for each book in Set 2
-        set2Scores.push({ book, score });
-
-        if (score > bestScore) {
-            bestScore = score;
-            bestBook = book;
-        }
-    });
-
-    // Store the recommendation and scores
-    localStorage.setItem('recommendation', JSON.stringify(bestBook));
-    localStorage.setItem('set2Scores', JSON.stringify(set2Scores));
-    localStorage.setItem('traits', JSON.stringify(traits));
-
-    // Redirect to results page
+    localStorage.setItem('recommendation', JSON.stringify(recommendedBook));
     window.location.href = '../activities/activity2results.html';
 }
-
-
     // Initialize the activity
     randomizeBooks();
     displayBooks();
