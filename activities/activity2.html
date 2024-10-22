@@ -30,7 +30,8 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         .highlight {
-            border-color: lime;
+            border-color: white;
+            background-color: purple;
         }
         .editable {
             cursor: pointer;
@@ -92,8 +93,8 @@
     function randomizeBooks() {
         // Shuffle all books, get first 8 for set 1 and the next 5 for set 2
         let shuffled = books.sort(() => Math.random() - 0.5);
-        set1Books = shuffled.slice(0, 8);
-        set2Books = shuffled.slice(8, 13);
+        set1Books = shuffled.slice(0, 5);
+        set2Books = shuffled.slice(5, 8);
     }
 
     function displayBooks() {
