@@ -54,20 +54,20 @@
             font-size: 10px;
         }
 
-        #firstInitial {
-            width: 50px; /* Small width for a single character */
+        #firstName {
+            flex: 1;
         }
 
-        #lastName {
-            flex: 1; /* Takes the remaining space */
+        #lastInitial {
+            width: 60px; /* Small width for a single character */
         }
 
         select {
             padding: 10px;
             border: none;
             border-radius: 5px;
-            font-size: 10px;
-            width: 80px; /* Small width for single-digit numbers */
+            font-size: 14px;
+            width: 80px;
         }
 
         button {
@@ -113,9 +113,10 @@
             which the user has read before. You will then be challenged to change the information from the user data to 
             force it to make a different recommendation.
         </p>
+        <p><u>Enter your <strong>First Name</strong>, <strong>Last Initial</strong>, and <strong>Grade Level</strong> to continue.</u></p>
         <div class="input-row">
-            <input type="text" id="firstInitial" placeholder="First Initial" maxlength="1">
-            <input type="text" id="lastName" placeholder="Last Name">
+            <input type="text" id="firstName" placeholder="First Name">
+            <input type="text" id="lastInitial" placeholder="Last Initial" maxlength="1">
             <select id="grade">
                 <option value="" disabled selected>Grade</option>
                 <option value="6">6</option>
@@ -128,16 +129,16 @@
     </div>
 
     <script>
-        const firstInitialInput = document.getElementById('firstInitial');
-        const lastNameInput = document.getElementById('lastName');
+        const firstNameInput = document.getElementById('firstName');
+        const lastInitialInput = document.getElementById('lastInitial');
         const gradeSelect = document.getElementById('grade');
         const startButton = document.getElementById('startButton');
         const errorMessage = document.getElementById('error-message');
 
         // Function to check if all fields are filled
         function checkInputs() {
-            if (firstInitialInput.value.trim() !== "" &&
-                lastNameInput.value.trim() !== "" &&
+            if (firstNameInput.value.trim() !== "" &&
+                lastInitialInput.value.trim() !== "" &&
                 gradeSelect.value !== "") {
                 startButton.disabled = false;
                 errorMessage.style.display = 'none';
@@ -147,18 +148,18 @@
         }
 
         // Add event listeners to inputs
-        firstInitialInput.addEventListener('input', checkInputs);
-        lastNameInput.addEventListener('input', checkInputs);
+        firstNameInput.addEventListener('input', checkInputs);
+        lastInitialInput.addEventListener('input', checkInputs);
         gradeSelect.addEventListener('change', checkInputs);
 
         // Handle button click to start activity
         startButton.addEventListener('click', () => {
-            const firstInitial = firstInitialInput.value.trim();
-            const lastName = lastNameInput.value.trim();
+            const firstName = firstNameInput.value.trim();
+            const lastInitial = lastInitialInput.value.trim().toUpperCase();
             const grade = gradeSelect.value;
 
-            if (firstInitial && lastName && grade) {
-                const username = `${firstInitial}${lastName}${grade}`;  // Combine inputs into a string
+            if (firstName && lastInitial && grade) {
+                const username = `${firstName}${lastInitial}${grade}`;  // Combine inputs into a string
                 localStorage.setItem('username', username);  // Save the combined string as username
                 window.location.href = 'activities/activity1.html';     // Redirect to the activity page
             } else {
