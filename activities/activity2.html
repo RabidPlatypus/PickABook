@@ -6,76 +6,193 @@
     <title>Book Recommendation Activity 2</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: linear-gradient(to right, #30142c, #243B55);
-            color: white;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent scrolling */
-        }
-        .container {
-            width: 100%;
-            margin: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: nowrap;
-            gap: 20px;
-            padding: 20px;
-        }
-        .books-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .books-container {
-            display: flex;
-            gap: 10px;
-            flex-wrap: nowrap;
-            margin-bottom: 10px;
-        }
-        .book {
-            margin: 10px;
-            text-align: center;
-            border: 2px solid white;
-            padding: 10px;
-            width: 120px;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .highlight {
-            border-color: white;
-            background-color: purple;
-        }
-        .editable {
-            cursor: pointer;
-            color: lime;
-        }
-        .editable:hover {
-            text-decoration: underline;
-        }
-        .button {
-            background-color: limegreen;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .divider {
-            border-left: 2px solid limegreen;
-            height: 300px; /* Adjust this height as needed */
-            margin: 0 20px;
-        }
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to right, #30142c, #243B55);
+    color: white;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Container for the book sections */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    height: 80vh; /* Occupy 80% of the viewport height */
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Books Section */
+.books-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Books container */
+.books-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Individual book styling */
+.book {
+    text-align: center;
+    border: 2px solid white;
+    padding: 10px;
+    width: 100%;
+    max-width: 150px;
+    min-width: 80px;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: auto;
+}
+
+/* Ensure text fits within the book */
+.book strong,
+.book .data {
+    font-size: 1rem; /* Default font size */
+    line-height: 1.2;
+    max-width: 100%; /* Prevents overflow */
+    text-align: center;
+    display: block;
+    word-break: break-word; /* Break long words */
+    white-space: normal; /* Allow wrapping */
+}
+
+/* Make the text responsive */
+.book strong,
+.book .data {
+    font-size: calc(0.6rem + 0.5vw); /* Dynamically scale text size */
+}
+
+/* Highlight styling */
+.highlight {
+    border-color: white;
+    background-color: purple;
+}
+
+/* Editable fields */
+.editable {
+    cursor: pointer;
+    color: lime;
+}
+.editable:hover {
+    text-decoration: underline;
+}
+
+/* Button styles */
+.button {
+    background-color: limegreen;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    font-size: 2vh;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%; /* Full width */
+    max-width: 300px;
+    box-sizing: border-box;
+}
+
+/* Divider styling */
+.divider {
+    border-left: 2px solid limegreen;
+    height: 50vh;
+    margin: 0 10px; /* Adjust margin for smaller screens */
+}
+
+/* Modal styles */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #243B55;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Media queries for various screen sizes */
+@media (max-width: 1280px) {
+    .container {
+        flex-wrap: wrap;
+        padding: 10px;
+        height: auto;
+    }
+
+    .books-container {
+        gap: 5px;
+    }
+
+    .book {
+        max-width: 100px;
+        min-width: 70px;
+    }
+
+    .divider {
+        display: none;
+    }
+
+    .button {
+        width: 90%;
+        font-size: 1.5vh;
+    }
+}
+
+
+
     </style>
 </head>
 <body>
-
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <h2>Activity Instructions</h2>
+            <p>Follow these steps to complete the activity:</p>
+            <ul>
+                <li>1. Edit the books in Set 1 by clicking on the author, age range, or tags to match your preferences.</li>
+                <li>2. Once you're satisfied, click the "Get Recommendation" button.</li>
+                <li>3. The AI will recommend a book from Set 2 based on your edits.</li>
+            </ul>
+            <button id="closeModalButton" class="button">Got it!</button>
+        </div>
+    </div>
 <div class="container">
     <div class="books-section">
-        <h2>Set 1: Edit these books to recommend the highlighted book from Set 2:</h2>
-        <h3>(Green text indicates editable field)</h3>
+        <h2>Set 1: User Books (Green text indicates editable field) </h2>
         <div class="books-container" id="set1">
             <!-- Books from Set 1 will appear here -->
         </div>
@@ -96,7 +213,49 @@
 
 <script src="../scripts/booksData.js"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("instructionsModal");
+        const closeModalButton = document.getElementById("closeModalButton");
 
+        // Show the modal after a short delay to ensure everything is rendered properly
+        setTimeout(() => {
+            modal.style.display = "flex";
+        }, 100); // 100ms delay ensures styles are applied correctly
+
+        // Close the modal when the user clicks "Got it!"
+        closeModalButton.addEventListener("click", function () {
+            modal.style.display = "none";
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    // Function to set equal heights for all book containers
+    function setEqualBookHeights() {
+        // Get all book elements
+        const bookElements = document.querySelectorAll('.book');
+
+        // Reset any previously set heights
+        bookElements.forEach(book => {
+            book.style.height = 'auto';
+        });
+
+        // Find the maximum height
+        let maxHeight = 0;
+        bookElements.forEach(book => {
+            maxHeight = Math.max(maxHeight, book.clientHeight);
+        });
+
+        // Apply the maximum height to all book elements
+        bookElements.forEach(book => {
+            book.style.height = `${maxHeight}px`;
+        });
+    }
+
+    // Call the function initially when the page loads
+    setEqualBookHeights();
+
+    // Reapply the equal heights if the window is resized
+    window.addEventListener('resize', setEqualBookHeights);
+});
     // Initialize variables
     let set1Books = [];
     let set2Books = [];
