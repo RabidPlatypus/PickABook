@@ -10,27 +10,42 @@
             text-align: center;
             background: linear-gradient(to right, #30142c, #243B55);
             color: white;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrolling */
         }
         .container {
-            width: 90%;
+            width: 100%;
             margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .books-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .books-container {
             display: flex;
-            justify-content: center;
+            gap: 10px;
             flex-wrap: nowrap;
-            margin-bottom: 50px;
+            margin-bottom: 10px;
         }
         .book {
             margin: 10px;
             text-align: center;
             border: 2px solid white;
             padding: 10px;
-            width: 150px;
+            width: 120px;
             background-color: rgba(255, 255, 255, 0.1);
         }
         .highlight {
-            border-color: lime;
+            border-color: white;
+            background-color: purple;
         }
         .editable {
             cursor: pointer;
@@ -44,27 +59,37 @@
             padding: 10px 20px;
             color: white;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             margin-top: 20px;
+        }
+        .divider {
+            border-left: 2px solid limegreen;
+            height: 300px; /* Adjust this height as needed */
+            margin: 0 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Activity 2: Edit Book Metadata to Influence Recommendations</h1>
-
-    <h2>Set 1: Edit these books to recommend the highlighted book from Set 2:</h2>
-    <h3>(Green text indicates editable field)</h3>
-    <div class="books-container" id="set1">
-        <!-- Books from Set 1 will appear here -->
+    <div class="books-section">
+        <h2>Set 1: Edit these books to recommend the highlighted book from Set 2:</h2>
+        <h3>(Green text indicates editable field)</h3>
+        <div class="books-container" id="set1">
+            <!-- Books from Set 1 will appear here -->
+        </div>
     </div>
+    
+    <div class="divider"></div> <!-- Divider between Set 1 and Set 2 -->
 
-    <h2>Set 2: Target Books:</h2>
-    <div class="books-container" id="set2">
-        <!-- Books from Set 2 will appear here -->
+    <div class="books-section">
+        <h2>Set 2: Target Books:</h2>
+        <div class="books-container" id="set2">
+            <!-- Books from Set 2 will appear here -->
+        </div>
     </div>
+</div>
 
     <button id="recommend-button" class="button" onclick="getRecommendation()">Get Recommendation</button>
 </div>
@@ -92,8 +117,8 @@
     function randomizeBooks() {
         // Shuffle all books, get first 8 for set 1 and the next 5 for set 2
         let shuffled = books.sort(() => Math.random() - 0.5);
-        set1Books = shuffled.slice(0, 8);
-        set2Books = shuffled.slice(8, 13);
+        set1Books = shuffled.slice(0, 5);
+        set2Books = shuffled.slice(5, 8);
     }
 
     function displayBooks() {
