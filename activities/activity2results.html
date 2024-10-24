@@ -71,29 +71,20 @@
             // Explanation section: Explain how the AI makes recommendations
             let explanationHTML = `
                 <div class="section">
-                    <h2>How the AI Picked a Book</h2>
-                    <p>The AI uses a mathematical technique called <strong>cosine similarity</strong> to compare the books you edited with the target books.</p>
-
-                    <p><strong>Cosine Similarity</strong> measures how close two books are, based on the features you edited: <strong>age range</strong>, <strong>tags</strong>, and <strong>author</strong>.</p>
-
-                    <h3>Dot Product & Cosine Similarity</h3>
-                    <p>For each book, the AI creates a vector—a series of numbers that represent the book’s features. It then calculates the <em>dot product</em> between the vectors for two books. This is done by multiplying the numbers in each position and summing the results:</p>
-                    
-                    <p style="text-align:center;">
-                    <strong>A · B = (a1 × b1) + (a2 × b2) + (a3 × b3)</strong>
-                    </p>
-
-                    <p>The AI then divides the dot product by the lengths of the vectors to calculate the similarity. The closer the result is to 1, the more similar the books are.</p>
-
-                    <h3>Equation</h3>
-                    <p>The formula for cosine similarity is:</p>
-                    <p style="text-align:center;">
-                    <strong>Cosine Similarity = A · B / (||A|| ||B||)</strong>
-                    </p>
-
-                    <p>Where <em>A · B</em> is the dot product, and ||A|| and ||B|| are the lengths of the vectors.</p>
-
-                    <p>The book with the highest similarity score is recommended based on how closely it matches your edited traits.</p>
+                    <h2>How the AI Chooses a Book</h2>
+                    <p>The AI finds books that match what you like by looking at different parts of each book, such as:</p>
+                    <ul>
+                        <li><strong>Age Range</strong> (like for kids, teens, or adults)</li>
+                        <li><strong>Author</strong> (who wrote the book)</li>
+                        <li><strong>Tags</strong> (what the book is about, like “adventure” or “fantasy”)</li>
+                    </ul>
+                    <p>The AI turns each book into a list of numbers based on these features. Some features are more important than others, so the AI gives them different “weights” or values.</p>
+                    <p>Next, the AI compares the books you edited (Set 1) with the books in Set 2. It uses a method called <strong>cosine similarity</strong> to see how similar the books are. Think of it like comparing two sets of points on a graph:</p>
+                    <ul>
+                        <li>If the points are close together, it means the books are very similar.</li>
+                        <li>The AI picks the book from Set 2 that is the most similar to the ones you liked.</li>
+                    </ul>
+                    <p>The closer the similarity score is to 1, the more alike the books are!</p>
                 </div>
 
             `;
