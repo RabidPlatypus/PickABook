@@ -5,55 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Recommendation Activity 1</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: linear-gradient(to right, #30142c, #243B55);
-            color: white;
-            margin: 0; /* Remove default margins */
-            overflow: hidden; /* Prevent scrolling */
-        }
-        .container {
-            width: 95%;
-            margin: auto;
-        }
-        .books-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: nowrap;
-            margin-bottom: 20px;
-            overflow: hidden; /* Prevent scrolling */
-        }
-        .book {
-            margin: 5px;
-            text-align: center;
-            border: 2px solid white;
-            padding: 5px;
-            width: 120px; /* Smaller width to fit more books */
-            background-color: rgba(255, 255, 255, 0.1);
-            font-size: 12px; /* Smaller font size */
-        }
-        .button {
-            background-color: limegreen;
-            padding: 5px 15px;
-            color: white;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        img {
-            width: 80px; /* Smaller image size */
-            height: auto;
-        }
-        h1, h2 {
-            font-size: 16px; /* Smaller headers */
-            margin-bottom: 10px;
-        }
-        .radio-container {
-            margin-top: 5px;
-            text-align: center;
-        }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to right, #30142c, #243B55);
+    color: white;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 95%;
+    margin: auto;
+}
+
+/* Books container styling for both Set 1 and Set 2 */
+.books-container {
+    display: flex;
+    justify-content: center; /* Center items in the container */
+    flex-wrap: wrap; /* Allow wrapping if needed */
+    margin-bottom: 20px;
+    overflow-x: auto;
+    gap: 8px; /* Consistent small gap between books */
+}
+
+/* Book styling for both sets */
+.book {
+    margin: 5px;
+    text-align: center;
+    border: 2px solid white;
+    padding: 5px;
+    width: 110px; /* Same width for all books */
+    background-color: rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    flex: 0 0 auto;
+}
+
+.button {
+    background-color: limegreen;
+    padding: 10px 15px; 
+    color: white;
+    border: none;
+    font-size: 1rem; 
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Image styling for all books */
+img {
+    width: 70px; /* Consistent width for images */
+    height: auto;
+}
+
+/* Header styles (unchanged) */
+h1, h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Center the radio buttons for all books */
+.radio-container {
+    margin-top: 5px;
+    text-align: center;
+}
     </style>
 </head>
 <body>
