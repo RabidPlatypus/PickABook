@@ -13,41 +13,36 @@
         .container {
             width: 80%;
             margin: auto;
-            text-align: left; /* Align content to the left for the books */
+            text-align: left;
         }
         h1 {
-            text-align: center; /* Center the header */
+            text-align: center;
+        }
+        .flex-container {
+            display: flex; /* Use flexbox to arrange children */
+            justify-content: space-between; /* Space between user and AI sections */
+            margin-bottom: 50px;
         }
         .books-container {
             display: flex;
-            justify-content: flex-start; /* Align books to the left */
-            flex-wrap: wrap;
-            margin-bottom: 50px;
+            flex-direction: column; /* Keep books in a column within each section */
+            width: 45%; /* Each section takes up about half of the container */
         }
         .book {
             margin: 20px;
             text-align: center;
             border: 2px solid white;
             padding: 10px;
-            width: 200px;
             background-color: rgba(255, 255, 255, 0.1);
         }
         img {
             width: 150px;
             height: auto;
         }
-        .separator {
-            border-left: 3px solid white;
-            height: 1000px; 
-            position: absolute;
-            left: 50%;
-            margin-left: -3px;
-            top: 80px; /* Adjust this value to position it under the header */
-        }
         .button-container {
-            display: flex; /* Use flexbox */
-            justify-content: center; /* Center the button */
-            margin-top: 20px; /* Space above the button */
+            display: flex; 
+            justify-content: center; 
+            margin-top: 20px; 
         }
         .button {
             background-color: limegreen;
@@ -57,6 +52,30 @@
             font-size: 16px;
             cursor: pointer;
         }
+        .similarity-explanation-container {
+            display: flex; /* Use flexbox to align child elements */
+            justify-content: space-between; /* Space between similarity and explanation */
+            margin-top: 30px; /* Add space above the container */
+        }
+
+        .similarity-container {
+            width: 50%; /* Set width for the similarity results */
+        }
+
+        .explanation-container {
+            width: 45%; /* Set width for the explanation */
+            margin-left: 20px; /* Add space between the two sections */
+            color: white; /* Make text color white */
+        }
+
+        .explanation-container p {
+            margin: 10px 0; /* Space out paragraphs */
+        }
+        .message {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -64,19 +83,45 @@
 <div class="container">
     <h1>Recommendation Results</h1>
 
-    <h2>Your Pick:</h2>
-    <div class="books-container" id="userSelection">
-        <!-- User's selected book will appear here -->
+    <div class="flex-container">
+        <div class="books-container" id="userSelection">
+            <h2>Your Pick:</h2>
+            <!-- User's selected book will appear here -->
+        </div>
+
+        <div class="books-container" id="algorithmRecommendation">
+            <h2>AI's Pick:</h2>
+            <!-- Algorithm's recommended book will appear here -->
+        </div>
     </div>
 
-    <div class="separator"></div>
+    <!-- Message container for success or failure message -->
+    <div class="message" id="comparisonMessage"></div>
 
-    <h2>AI's Pick:</h2>
-    <div class="books-container" id="algorithmRecommendation">
-        <!-- Algorithm's recommended book will appear here -->
+    <div class="similarity-explanation-container">
+        <div class="similarity-container" id="similarityResults">
+            <h2>Similarity Calculations:</h2>
+            <!-- Similarity results will be displayed here -->
+        </div>
+    
+        <!-- Explanation section -->
+        <div class="explanation-container">
+            <h2>How the Algorithm Works:</h2>
+            <p id="algorithmExplanation">
+                The algorithm starts by randomizing the book list and splitting it into two sets: Set 1 (8 books the user has read) and Set 2 (5 books available for recommendation). 
+            </p>
+            <p>
+                Each book is converted into a numerical vector based on its age range, author, and tags. This is done using predefined weights, which determine how much influence each feature has on the recommendation. 
+            </p>
+            <p>
+                For each book in Set 2, the algorithm calculates its similarity to the books in Set 1 using cosine similarity. This measures how closely related the books are based on their vectors, with values closer to 1 indicating higher similarity. 
+            </p>
+            <p>
+                Finally, the book from Set 2 with the highest average similarity score to the books in Set 1 is recommended to the user.
+            </p>
+        </div>
     </div>
 
-    <!-- Button container to center the button -->
     <div class="button-container">
         <button class="button" id="activity2-button">Go to Activity 2</button>
     </div>
@@ -141,6 +186,7 @@
     // Retrieve user and algorithm selections from localStorage
     const userSelectionTitle = localStorage.getItem('userSelection');
     const algorithmRecommendationTitle = localStorage.getItem('algorithmRecommendation');
+    const recommendationDetails = JSON.parse(localStorage.getItem('recommendationDetails'));
 
     // Find the books based on their titles
     const userSelectedBook = findBookByTitle(userSelectionTitle);
@@ -152,6 +198,33 @@
 
     // Store CSV data in localStorage for future download
     storeCSVData(userSelectedBook, algorithmRecommendedBook);
+
+    // Compare user's pick with AI's pick and display a message
+    const comparisonMessage = document.getElementById('comparisonMessage');
+    if (userSelectedBook.title === algorithmRecommendedBook.title) {
+        comparisonMessage.innerHTML = "<p>🎉 Success! You picked the same book as the AI!</p>";
+    } else {
+        comparisonMessage.innerHTML = "<p>❌ You did not pick the same book the AI recommended!</p>";
+    }
+
+    // Display similarity calculations
+    const similarityResults = document.getElementById('similarityResults');
+    
+    if (recommendationDetails) {
+        const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
+        
+        if (recommended) {
+            similarityResults.innerHTML += `<p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>`;
+            similarityResults.innerHTML += `<p>Individual Similarities with Set 1:</p>`;
+            similarityResults.innerHTML += `<ul>`;
+            recommended.details.individualSimilarities.forEach((sim, index) => {
+                similarityResults.innerHTML += `<li>Compared with Set 1 Book ${index + 1}: Similarity Score = ${sim.toFixed(2)}</li>`;
+            });
+            similarityResults.innerHTML += `</ul>`;
+        }
+    } else {
+        similarityResults.innerHTML = '<p>No recommendation details found.</p>';
+    }
 
     // Add event listener to the button for navigation
     document.getElementById('activity2-button').addEventListener('click', function() {

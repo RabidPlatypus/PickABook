@@ -5,69 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Recommendation Activity 1</title>
     <style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(to right, #30142c, #243B55);
-    color: white;
-    margin: 0;
-    overflow-x: hidden;
-}
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #30142c, #243B55);
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-.container {
-    width: 95%;
-    margin: auto;
-}
+        .container {
+            width: 95%;
+            margin: auto;
+        }
 
-/* Books container styling for both Set 1 and Set 2 */
-.books-container {
-    display: flex;
-    justify-content: center; /* Center items in the container */
-    flex-wrap: wrap; /* Allow wrapping if needed */
-    margin-bottom: 20px;
-    overflow-x: auto;
-    gap: 8px; /* Consistent small gap between books */
-}
+        .books-container {
+            display: flex;
+            justify-content: center; 
+            flex-wrap: wrap; 
+            margin-bottom: 20px;
+            overflow-x: auto;
+            gap: 8px; 
+        }
 
-/* Book styling for both sets */
-.book {
-    margin: 5px;
-    text-align: center;
-    border: 2px solid white;
-    padding: 5px;
-    width: 110px; /* Same width for all books */
-    background-color: rgba(255, 255, 255, 0.1);
-    font-size: 12px;
-    flex: 0 0 auto;
-}
+        .book {
+            margin: 5px;
+            text-align: center;
+            border: 2px solid white;
+            padding: 5px;
+            width: 110px; 
+            background-color: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            flex: 0 0 auto;
+        }
 
-.button {
-    background-color: limegreen;
-    padding: 10px 15px; 
-    color: white;
-    border: none;
-    font-size: 1rem; 
-    cursor: pointer;
-    margin-top: 10px;
-}
+        .button {
+            background-color: limegreen;
+            padding: 10px 15px; 
+            color: white;
+            border: none;
+            font-size: 1rem; 
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-/* Image styling for all books */
-img {
-    width: 70px; /* Consistent width for images */
-    height: auto;
-}
+        img {
+            width: 70px; 
+            height: auto;
+        }
 
-/* Header styles (unchanged) */
-h1, h2 {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
+        h1, h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
 
-/* Center the radio buttons for all books */
-.radio-container {
-    margin-top: 5px;
-    text-align: center;
-}
+        .radio-container {
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -91,12 +86,29 @@ h1, h2 {
 <script src="../scripts/booksData.js"></script>
 
 <script>
+
+    let set1Books = [];
+    let set2Books = [];
+    let editCount = 0;
+    
+    const weights = {
+        age_range: 3,
+        author: 1,
+        tags: 2,
+    };
+
+    // Extract unique values for dropdowns
+    const uniqueAuthors = [...new Set(books.map(book => book.author))];
+    const uniqueAgeRanges = [...new Set(books.map(book => book.age_range))];
+    const uniqueTags = [...new Set(books.flatMap(book => book.tags))];
+
     function randomizeBooks() {
         let shuffled = books.sort(() => Math.random() - 0.5);
         set1Books = shuffled.slice(0, 8); // 8 books for Set 1
         set2Books = shuffled.slice(8, 13); // Next 5 books for Set 2
     }
 
+    function bookToVector(book) {
     const ageRangeMap = {
         "Elementary": [1, 0, 0, 0],
         "Middle School": [0, 1, 0, 0],
@@ -104,18 +116,19 @@ h1, h2 {
         "Adult": [0, 0, 0, 1]
     };
 
-    const tagSet = [
-        "Adventure", "Fantasy", "Science Fiction", "Dystopian", "Romance", 
-        "Drama", "Classic", "Nature", "Friendship", "Political", "Epic", 
-        "Social Justice", "Philosophy"
-    ];
+    const tagSet = uniqueTags;
+    const authorSet = uniqueAuthors;
 
-    // Vector representation of a book
-    function bookToVector(book) {
-        const ageVec = ageRangeMap[book.age_range] || [0, 0, 0, 0];
-        const tagVec = tagSet.map(tag => book.tags.includes(tag) ? 1 : 0);
-        return [...ageVec, ...tagVec];
-    }
+    // Weights for different classes of data
+    const ageWeight = 3;
+    const tagWeight = 2;
+    const authorWeight = 1;
+
+    const ageVec = ageRangeMap[book.age_range].map(val => val * ageWeight) || [0, 0, 0, 0];
+    const tagVec = tagSet.map(tag => book.tags.includes(tag) ? 1 : 0).map(val => val * tagWeight);
+    const authorVec = uniqueAuthors.map(author => (book.author === author ? 1 : 0)).map(val => val * authorWeight);
+    return [...ageVec, ...tagVec,...authorVec];
+}
 
     // Cosine similarity between two vectors
     function cosineSimilarity(vecA, vecB) {
@@ -127,24 +140,40 @@ h1, h2 {
 
     // Recommend the best book from Set 2 based on Set 1
     function recommendBook(set1, set2) {
-        const set1Vectors = set1.map(bookToVector);
-        const recommendations = set2.map(book2 => {
-            const book2Vec = bookToVector(book2);
-            const avgSimilarity = set1Vectors
-                .map(vec1 => cosineSimilarity(vec1, book2Vec))
-                .reduce((sum, sim) => sum + sim, 0) / set1.length;
-            return { book: book2, similarity: avgSimilarity };
-        });
-        recommendations.sort((a, b) => b.similarity - a.similarity);
-        return recommendations[0].book;
-    }
+    const set1Vectors = set1.map(bookToVector);
+    const recommendations = set2.map(book2 => {
+        const book2Vec = bookToVector(book2);
+        const similarities = set1Vectors.map(vec1 => cosineSimilarity(vec1, book2Vec));
+        const avgSimilarity = similarities.reduce((sum, sim) => sum + sim, 0) / set1.length;
+        
+        // Store detailed data for debugging
+        return {
+            book: book2,
+            similarity: avgSimilarity,
+            details: {
+                book2Vector: book2Vec,
+                set1Vectors: set1Vectors,
+                individualSimilarities: similarities
+            }
+        };
+    });
+    
+    // Sort by similarity score in descending order
+    recommendations.sort((a, b) => b.similarity - a.similarity);
+    
+    // Store the detailed calculations in localStorage
+    localStorage.setItem('recommendationDetails', JSON.stringify(recommendations));
+    
+    // Return the top recommendation
+    return recommendations[0].book;
+}
 
     function displayRecommendation() {
         const userSelection = document.querySelector('input[name="recommendation"]:checked').value;
         const algorithmRecommendation = recommendBook(set1Books, set2Books);
         localStorage.setItem('userSelection', userSelection);
         localStorage.setItem('algorithmRecommendation', algorithmRecommendation.title);
-        window.location.href = 'activity1results.html';
+        window.location.href = '../activities/activity1results.html';
     }
 
     function displayBooks() {
