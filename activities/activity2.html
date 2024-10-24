@@ -38,18 +38,6 @@
     min-width: 200px;
 }
 
-/* Books container */
-.books-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 10px;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-}
-
-/* Individual book styling */
 .book {
     text-align: center;
     border: 2px solid white;
@@ -63,7 +51,19 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: auto;
+    height: auto; /* Start with auto */
+}
+
+/* Make sure the books-container fills its parent height */
+.books-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    width: 100%;
+    height: 100%; /* Ensures it fills the container height */
 }
 
 /* Ensure text fits within the book */
@@ -227,35 +227,6 @@
             modal.style.display = "none";
     });
 });
-document.addEventListener("DOMContentLoaded", function () {
-    // Function to set equal heights for all book containers
-    function setEqualBookHeights() {
-        // Get all book elements
-        const bookElements = document.querySelectorAll('.book');
-
-        // Reset any previously set heights
-        bookElements.forEach(book => {
-            book.style.height = 'auto';
-        });
-
-        // Find the maximum height
-        let maxHeight = 0;
-        bookElements.forEach(book => {
-            maxHeight = Math.max(maxHeight, book.clientHeight);
-        });
-
-        // Apply the maximum height to all book elements
-        bookElements.forEach(book => {
-            book.style.height = `${maxHeight}px`;
-        });
-    }
-
-    // Call the function initially when the page loads
-    setEqualBookHeights();
-
-    // Reapply the equal heights if the window is resized
-    window.addEventListener('resize', setEqualBookHeights);
-});
     // Initialize variables
     let set1Books = [];
     let set2Books = [];
@@ -406,12 +377,15 @@ let changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];  // Initi
 
 
 function editField(span, type, options, onChange) {
-    // Logic for editing book data on screen
-    const currentValue = span.textContent;  // Get the original value
+    // Sort the options alphabetically
+    const sortedOptions = options.sort((a, b) => a.localeCompare(b));
+
+    // Get the original value
+    const currentValue = span.textContent;
 
     // Create the dropdown (select) element
     const select = document.createElement('select');
-    options.forEach(option => {
+    sortedOptions.forEach(option => {
         const opt = document.createElement('option');
         opt.value = option;
         opt.textContent = option;
@@ -461,6 +435,7 @@ function editField(span, type, options, onChange) {
         span.style.cursor = 'pointer';
     });
 }
+
 
 function bookToVector(book) {
     const ageRangeMap = {
@@ -522,9 +497,37 @@ function getRecommendation() {
     localStorage.setItem('recommendation', JSON.stringify(recommendedBook));
     window.location.href = '../activities/activity2results.html';
 }
-    // Initialize the activity
-    randomizeBooks();
-    displayBooks();
+function setEqualBookHeights() {
+    // Get all book elements
+    const bookElements = document.querySelectorAll('.book');
+
+    // Reset any previously set heights
+    bookElements.forEach(book => {
+        book.style.height = 'auto';
+    });
+
+    // Find the maximum height among all book elements
+    let maxHeight = 0;
+    bookElements.forEach(book => {
+        const bookHeight = book.scrollHeight; // Get the full height of each book's content
+        maxHeight = Math.max(maxHeight, bookHeight);
+    });
+
+    // Apply the maximum height to all book elements
+    bookElements.forEach(book => {
+        book.style.height = `${maxHeight}px`;
+    });
+}
+
+// Call the function initially when the page loads
+setEqualBookHeights();
+
+// Reapply the equal heights if the window is resized
+window.addEventListener('resize', setEqualBookHeights);
+
+// Initialize the activity
+randomizeBooks();
+displayBooks();
 </script>
 </body>
 </html>
