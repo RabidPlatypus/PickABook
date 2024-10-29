@@ -104,8 +104,8 @@
 
     function randomizeBooks() {
         let shuffled = books.sort(() => Math.random() - 0.5);
-        set1Books = shuffled.slice(0, 8); // 8 books for Set 1
-        set2Books = shuffled.slice(8, 13); // Next 5 books for Set 2
+        set1Books = shuffled.slice(0, 5); // 8 books for Set 1
+        set2Books = shuffled.slice(3, 6); // Next 5 books for Set 2
     }
 
     function bookToVector(book) {
