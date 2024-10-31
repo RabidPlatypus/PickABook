@@ -167,13 +167,15 @@
 
         // Modified start button click handler to include CSV initialization
         startButton.addEventListener('click', () => {
-            const firstName = firstNameInput.value.trim();
-            const lastInitial = lastInitialInput.value.trim().toUpperCase();
+            let firstName = firstNameInput.value.trim().toLowerCase(); // Convert to lowercase for consistency
+            firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1); // Capitalize only the first letter
+
+            const lastInitial = lastInitialInput.value.trim().toUpperCase(); // Fully capitalize the last initial
             const grade = gradeSelect.value;
 
             if (firstName && lastInitial && grade) {
                 const username = `${firstName}${lastInitial}${grade}`;  // Combine inputs into a string
-                localStorage.setItem('username', username);  // Save the combined string as username
+                localStorage.setItem('username', username);  // Save the formatted username
 
                 // Initialize the CSV with the first row
                 initializeCSV(username);
