@@ -1,83 +1,70 @@
-# **Pick-A-Book: AI Recommendation Activity**
+# Pick-A-Book: Interactive Book Recommendation System
 
-This project is an educational tool designed to teach students how recommender systems work, similar to those used by popular platforms like YouTube, TikTok, and Netflix. The app includes two activities where users interact with book recommendations and compare their guesses to the AI's choices, providing insight into how algorithms operate.
+Pick-A-Book is an interactive web application that lets users explore how recommendation algorithms work. Through two engaging activities, users interact with a simulated book recommendation system, making selections and influencing recommendations based on the system’s similarity-based algorithm. 
 
-## **How It Works**
+## Table of Contents
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Activities Overview](#activities-overview)
+  - [Activity 1](#activity-1)
+  - [Activity 2](#activity-2)
+- [Data and Recommendations](#data-and-recommendations)
+- [Logging and Tracking](#logging-and-tracking)
 
-The app presents two different activities where users interact with a set of books and the AI makes a recommendation based on the metadata associated with those books (such as author, age range, and tags). The user is challenged to manipulate the metadata to influence or guess the AI's recommendation.
+## Features
+- **User-Based Recommendations**: Users choose books based on previously read selections, enabling the system to recommend books that align with their preferences.
+- **Editable Recommendation Influencing**: In Activity 2, users can modify book attributes to see how data manipulation influences algorithmic recommendations.
+- **Algorithm Explanation**: Detailed explanations on results pages provide insights into the recommendation algorithm, including similarity scoring.
 
-### **Activity 1: Guess the Recommendation**
+## Project Structure
+The project is organized into folders as follows:
+📦 Project Root 
+├── 📄 index.html # Main entry point, where users input their details to start activities 
+├── 📄 README.md # Project documentation 
+├── 📂 activities # Folder containing HTML files for each activity and result page 
+│ ├── 📄 activity1.html # Activity 1: Book recommendation selection 
+│ ├── 📄 activity1results.html# Results page for Activity 1 with similarity analysis 
+│ ├── 📄 activity2.html # Activity 2: Manipulate book data to influence recommendations 
+│ └── 📄 activity2results.html# Results page for Activity 2, showing recommendation outcome 
+├── 📂 Images # Folder containing images for each book │ └── 📄 [book images].jpg # Book cover images used throughout the activities 
+└── 📂 scripts # Folder for JavaScript files 
+└── 📄 booksData.js # Book data file with titles, authors, age ranges, tags, and image paths
 
-In this activity, the user is presented with two groups of books:
-- **Group 1:** A set of books the user is familiar with.
-- **Group 2:** A set of target books for the AI to recommend from.
 
-The user guesses which book the AI will recommend based on the characteristics of Group 1 (such as shared authors, tags, and age ranges). After making their guess, the user is shown what the AI would recommend and how their guess compares to the AI's choice.
+## Getting Started
+1. **Clone the Repository**: Download the project to your local machine.
+2. **Run via GitHub Pages**: Access the project directly at [Pick-A-Book on GitHub Pages](https://rabidplatypus.github.io/PickABook).
+3. **Enter User Information**: Input your first name, last initial, and grade level to begin.
 
-**Results for Activity 1**: The results of this activity will be shown on a separate results page, `activity1results.html`.
+## Activities Overview
 
-### **Activity 2: Manipulate Metadata**
+### Activity 1
+- **Goal**: Select a book recommendation based on the user’s previous reads.
+- **Process**: 
+  - The user is presented with books they've read (Set 1) and books to recommend (Set 2).
+  - The user selects a book from Set 2 that they feel would be a good recommendation.
+  - The system’s recommendation, based on similarity scoring, is displayed alongside the user’s selection.
+- **Results**: Activity 1’s results page (`activity1results.html`) shows the user’s choice, the algorithm’s choice, and similarity scores with explanations.
 
-In the second activity, the user is challenged to edit the metadata (such as author, age range, and tags) of books in Group 1 to influence the AI’s recommendation from Group 2. The goal is to make the AI recommend a specific book by changing the information in Group 1.
+### Activity 2
+- **Goal**: Influence the recommendation by editing book data.
+- **Process**: 
+  - Users can adjust author, age range, and tags of books in Set 1.
+  - The goal is to make minimal edits to influence the algorithm to select a specific book from Set 2.
+- **Results**: Activity 2’s results page (`activity2results.html`) displays whether the user succeeded in influencing the recommendation, the total edits made, and similarity scores.
 
-- Users can edit details like **author**, **age range**, and **tags**.
-- The AI aggregates the traits from Group 1, and then compares those to the books in Group 2 to make a recommendation.
-- The user can view the recommendation and compare how well they influenced the AI.
+## Data and Recommendations
+The recommendation algorithm uses **cosine similarity** to compare books. Each book is represented as a vector based on:
+  - **Age Range** (weighted heavily)
+  - **Tags** (moderate weight)
+  - **Author** (minimal weight)
 
-**Results for Activity 2**: The results of this activity will be shown on a separate results page, `activity2results.html`.
+Similarity scores are calculated to determine how closely books in Set 2 match with Set 1 based on these attributes. The book in Set 2 with the highest similarity score is recommended.
 
-## **Technologies Used**
+## Logging and Tracking
+This project logs user actions, edits, and results in `localStorage`. Each session’s data is stored as CSV-formatted entries, which can be downloaded for analysis upon completing the activities.
 
-- **HTML**: For the structure of the app.
-- **CSS**: For styling the pages.
-- **JavaScript**: For the interactive behavior and logic.
-- **GitHub Pages**: For hosting the project.
+--- 
 
-## **How to Run the Project**
-
-1. **Clone the Repository:**
-   - Clone the repository to your local machine using:
-     ```bash
-     git clone https://github.com/your-username/your-repository.git
-     ```
-
-2. **File Structure:**
-   - The project is organized as follows:
-     ```
-     /your-project
-       ├── /Images                # Contains images used in the app
-       ├── index.html             # Title page
-       ├── /activities            # Contains activity1.html and activity2.html files
-       │    ├── activity1.html    # Guess the Recommendation activity
-       │    ├── activity1results.html # Results page for activity 1
-       │    ├── activity2.html    # Manipulate Metadata activity
-       │    ├── activity2results.html # Results page for activity 2
-       ├──  /scripts               # Contains JavaScript files
-       │    ├── booksData.js # Contains book data
-       
-     ```
-
-3. **Launch the App:**
-   - Open `index.html` in a browser. This is the main title page, where the user can enter their username and start the activities.
-   - From the title page, users can navigate to **Activity 1** or **Activity 2**.
-
-4. **GitHub Pages:**
-   - You can also run this project directly from the browser by visiting the GitHub Pages URL, which will be available after deployment.
-
-## **How the AI Works**
-
-The AI uses metadata from Group 1 books to calculate a score for each book in Group 2. The score is based on how many matching characteristics (author, age range, and tags) there are between the two groups. The book with the highest score is recommended by the AI.
-
-The formula used is:
-\[
-{Book Score} = ({Author Points}) + ({Age Range Points}) + ({Tag Points})
-\]
-
-- **Author Points:** +1 for each matching author.
-- **Age Range Points:** +3 for each matching age range.
-- **Tag Points:** +2 for each matching tag.
-
-The AI compares the characteristics of Group 1 books with the Group 2 target books and recommends the book with the highest score.
-
-## **License**
-This project is licensed under the MIT License.
+Access the application live at [Pick-A-Book on GitHub Pages](https://rabidplatypus.github.io/PickABook).
