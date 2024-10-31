@@ -43,6 +43,7 @@
             display: flex; 
             justify-content: center; 
             margin-top: 20px; 
+            gap: 10px;
         }
         .button {
             background-color: limegreen;
@@ -123,6 +124,7 @@
     </div>
 
     <div class="button-container">
+        <button class="button" onclick="retryActivity1()">Retry Activity</button>
         <button class="button" id="activity2-button">Go to Activity 2</button>
     </div>
 </div>
@@ -147,40 +149,27 @@
         container.appendChild(bookDiv);
     }
 
-    // Prepare CSV data as a string
-    function prepareCSVData(userBook, aiBook) {
-        // Create header
-        const header = ['User Pick', 'User Author', 'User Age Range', 'User Tags', 
-                        'AI Pick', 'AI Author', 'AI Age Range', 'AI Tags'];
+
+    function retryActivity1() {
+        // Retrieve existing csvContent from localStorage
+        let csvContent = localStorage.getItem('csvContent') || 'timestamp,tag,data\n';
         
-        // Get user selected book details
-        const userBookData = [
-            userBook.title,
-            userBook.author,
-            userBook.age_range,
-            userBook.tags.join(', ')
-        ];
-
-        // Get algorithm recommended book details
-        const aiBookData = [
-            aiBook.title,
-            aiBook.author,
-            aiBook.age_range,
-            aiBook.tags.join(', ')
-        ];
-
-        // Combine header and data
-        const csvRows = [header, [...userBookData, ...aiBookData]];
+        // Generate a new timestamp for the retry action
+        const timestamp = new Date().toISOString();
         
-        // Convert array to CSV string
-        return csvRows.map(row => row.join(',')).join('\n');
-    }
+        // Log the retry action in csvContent
+        csvContent += `${timestamp},Act1Retry,N/A\n`;
+        
+        // Save the updated csvContent back to localStorage
+        localStorage.setItem('csvContent', csvContent);
 
-    // Store CSV data in localStorage for later use
-    function storeCSVData(userBook, aiBook) {
-        let csvData = prepareCSVData(userBook, aiBook);
-        csvData += "\n\n"; 
-        localStorage.setItem('csvContent', csvData);
+        // Clear only Activity 1 specific data in localStorage
+        localStorage.removeItem('userSelection');
+        localStorage.removeItem('algorithmRecommendation');
+        localStorage.removeItem('recommendationDetails');
+        
+        // Redirect back to Activity 1
+        window.location.href = '../activities/activity1.html';
     }
     
     // Retrieve user and algorithm selections from localStorage
@@ -196,8 +185,6 @@
     displayBook('userSelection', userSelectedBook);
     displayBook('algorithmRecommendation', algorithmRecommendedBook);
 
-    // Store CSV data in localStorage for future download
-    storeCSVData(userSelectedBook, algorithmRecommendedBook);
 
     // Compare user's pick with AI's pick and display a message
     const comparisonMessage = document.getElementById('comparisonMessage');

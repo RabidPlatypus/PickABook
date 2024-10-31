@@ -164,43 +164,30 @@
             window.location.href = '../activities/activity2.html';
         }
 
-        // "Done" button functionality to save the CSV and clear localStorage
+        // "Done" button functionality to download the CSV and clear localStorage
         document.getElementById('doneButton').addEventListener('click', function() {
-            let csvContent = localStorage.getItem('csvContent') || "";  
-            const changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];
-            const targetBook = JSON.parse(localStorage.getItem('recommendation'));  
-            const isTargetRecommended = JSON.parse(localStorage.getItem('success'));
-            let attemptNumber = parseInt(localStorage.getItem('attemptNumber')) || 1;  
+            // Retrieve the complete csvContent from localStorage
+            const csvContent = localStorage.getItem('csvContent') || 'timestamp,tag,data\n';
 
-            if (attemptNumber > 1) {
-                csvContent += "\n";  
-                attemptNumber += 1;
-            }
-            csvContent += "Attempt,Book Title,Type,Original Value,New Value\n";
-            changesLog.forEach(change => {
-                csvContent += `${attemptNumber},${change.bookTitle},${change.type},${change.originalValue},${change.newValue}\n`;
-            });
-
-            if (targetBook) {
-                csvContent += `\nAttempt ${attemptNumber},Target Book Traits:,${isTargetRecommended}\n`;
-                csvContent += `Title,Author,Age Range,Tags\n`;
-                csvContent += `${targetBook.title},${targetBook.author},${targetBook.age_range},${targetBook.tags.join('; ')}\n`;
-            }
-
-            localStorage.setItem('csvContent', csvContent);
+            // Create a Blob from csvContent and initiate download
             const username = localStorage.getItem('username') || 'NA';
             const csvBlob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(csvBlob);
             const downloadLink = document.createElement('a');
             downloadLink.href = url;
-            downloadLink.download = `${username}_PickABook.csv`;  
+            downloadLink.download = `${username}_PickABook.csv`;  // Set the filename
             document.body.appendChild(downloadLink);
+
+            // Trigger download and clean up
             downloadLink.click();
             document.body.removeChild(downloadLink);
+            window.URL.revokeObjectURL(url); // Release the Blob URL
 
+            // Clear localStorage and redirect to the home page
             localStorage.clear();
             window.location.href = '../index.html';  
         });
+
 
         displayResult();  // Initialize the result display
     </script>

@@ -129,11 +129,24 @@
     </div>
 
     <script>
+        localStorage.clear();
         const firstNameInput = document.getElementById('firstName');
         const lastInitialInput = document.getElementById('lastInitial');
         const gradeSelect = document.getElementById('grade');
         const startButton = document.getElementById('startButton');
         const errorMessage = document.getElementById('error-message');
+
+        // Function to initialize CSV content
+        function initializeCSV(username) {
+            // Generate the current timestamp
+            const timestamp = new Date().toISOString();
+            
+            // Initialize csvContent with the header row and the first data row
+            const csvContent = `timestamp,tag,data\n${timestamp},NEWUSER,${username}\n`;
+            
+            // Store csvContent in localStorage
+            localStorage.setItem('csvContent', csvContent);
+        }
 
         // Function to check if all fields are filled
         function checkInputs() {
@@ -152,7 +165,7 @@
         lastInitialInput.addEventListener('input', checkInputs);
         gradeSelect.addEventListener('change', checkInputs);
 
-        // Handle button click to start activity
+        // Modified start button click handler to include CSV initialization
         startButton.addEventListener('click', () => {
             const firstName = firstNameInput.value.trim();
             const lastInitial = lastInitialInput.value.trim().toUpperCase();
@@ -161,7 +174,12 @@
             if (firstName && lastInitial && grade) {
                 const username = `${firstName}${lastInitial}${grade}`;  // Combine inputs into a string
                 localStorage.setItem('username', username);  // Save the combined string as username
-                window.location.href = 'activities/activity1.html';     // Redirect to the activity page
+
+                // Initialize the CSV with the first row
+                initializeCSV(username);
+
+                // Redirect to the activity page
+                window.location.href = 'activities/activity1.html';
             } else {
                 errorMessage.style.display = 'block';  // Show error if fields are not filled properly
             }
