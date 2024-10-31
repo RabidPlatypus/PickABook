@@ -210,7 +210,7 @@
         </div>
     </div>
 </div>
-
+    <button id="instructionsButton" class="button" style="background-color: blue; position: fixed; top: 20px; right: 20px;">Instructions</button>
     <button id="recommend-button" class="button" onclick="getRecommendation()">Get Recommendation</button>
 </div>
 
@@ -219,8 +219,9 @@
     document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("instructionsModal");
     const closeModalButton = document.getElementById("closeModalButton");
+    const instructionsButton = document.getElementById("instructionsButton");
 
-    // Show the modal after a short delay to ensure everything is rendered properly
+    // Show the modal initially
     setTimeout(() => {
         modal.style.display = "flex";
     }, 100);
@@ -229,13 +230,16 @@
     closeModalButton.addEventListener("click", function () {
         modal.style.display = "none";
     });
-    // Existing functions to randomize and display books
+
+    // Show the modal again when the "Instructions" button is clicked
+    instructionsButton.addEventListener("click", function () {
+        modal.style.display = "flex";
+    });
+
     randomizeBooks();
     displayBooks();
-    
-    // Initial CSV logging for Activity 2 start
+    // Initialize CSV logging and display books
     initializeActivity2Logging();
-
     
 });
 
