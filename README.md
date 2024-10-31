@@ -4,8 +4,8 @@ Pick-A-Book is an interactive web application that lets users explore how recomm
 
 ## Table of Contents
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
 - [Activities Overview](#activities-overview)
   - [Activity 1](#activity-1)
   - [Activity 2](#activity-2)
@@ -17,15 +17,27 @@ Pick-A-Book is an interactive web application that lets users explore how recomm
 - **Editable Recommendation Influencing**: In Activity 2, users can modify book attributes to see how data manipulation influences algorithmic recommendations.
 - **Algorithm Explanation**: Detailed explanations on results pages provide insights into the recommendation algorithm, including similarity scoring.
 
-## Project Structure
-The project is organized into folders as follows:
-Pick-A-Book/ ├── index.html # Main entry point where users input details to start activities ├── README.md # Project documentation ├── activities/ # Folder containing HTML files for each activity and result page │ ├── activity1.html # Activity 1: Book recommendation selection │ ├── activity1results.html # Results page for Activity 1 with similarity analysis │ ├── activity2.html # Activity 2: Manipulate book data to influence recommendations │ └── activity2results.html # Results page for Activity 2, showing recommendation outcome ├── Images/ # Folder containing images for each book │ └── [book images].jpg # Book cover images used throughout the activities └── scripts/ # Folder for JavaScript files └── booksData.js # Book data file with titles, authors, age ranges, tags, and image paths
-
-
 ## Getting Started
 1. **Clone the Repository**: Download the project to your local machine.
 2. **Run via GitHub Pages**: Access the project directly at [Pick-A-Book on GitHub Pages](https://rabidplatypus.github.io/PickABook).
 3. **Enter User Information**: Input your first name, last initial, and grade level to begin.
+
+## Project Structure
+
+The project is organized into folders as follows:
+
+- 📦 **Project Root**
+  - 📄 `index.html`: Main entry point where users input their details to start activities
+  - 📄 `README.md`: Project documentation
+  - 📂 **activities**: Folder containing HTML files for each activity and result page
+    - 📄 `activity1.html`: Activity 1, book recommendation selection
+    - 📄 `activity1results.html`: Results page for Activity 1 with similarity analysis
+    - 📄 `activity2.html`: Activity 2, manipulate book data to influence recommendations
+    - 📄 `activity2results.html`: Results page for Activity 2, showing recommendation outcome
+  - 📂 **Images**: Folder containing images for each book
+    - 📄 `[book images].jpg`: Book cover images used throughout the activities
+  - 📂 **scripts**: Folder for JavaScript files
+    - 📄 `booksData.js`: Book data file with titles, authors, age ranges, tags, and image paths
 
 ## Activities Overview
 
