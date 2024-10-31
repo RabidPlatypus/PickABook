@@ -217,19 +217,46 @@
 <script src="../scripts/booksData.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("instructionsModal");
-        const closeModalButton = document.getElementById("closeModalButton");
+    const modal = document.getElementById("instructionsModal");
+    const closeModalButton = document.getElementById("closeModalButton");
 
-        // Show the modal after a short delay to ensure everything is rendered properly
-        setTimeout(() => {
-            modal.style.display = "flex";
-        }, 100); // 100ms delay ensures styles are applied correctly
+    // Show the modal after a short delay to ensure everything is rendered properly
+    setTimeout(() => {
+        modal.style.display = "flex";
+    }, 100);
 
-        // Close the modal when the user clicks "Got it!"
-        closeModalButton.addEventListener("click", function () {
-            modal.style.display = "none";
+    // Close the modal when the user clicks "Got it!"
+    closeModalButton.addEventListener("click", function () {
+        modal.style.display = "none";
     });
+    // Existing functions to randomize and display books
+    randomizeBooks();
+    displayBooks();
+    
+    // Initial CSV logging for Activity 2 start
+    initializeActivity2Logging();
+
+    
 });
+
+function initializeActivity2Logging() {
+    // Capture timestamp for the start of Activity 2
+    const timestamp = new Date().toISOString();
+    let csvContent = localStorage.getItem('csvContent') || 'timestamp,tag,data\n';
+
+    // Log activity start
+    csvContent += `${timestamp},Act2Start,N/A\n`;
+
+    // Log Set 1 and Set 2 book titles
+    const set1Titles = set1Books.map(book => book.title).join('; ');
+    const set2Titles = set2Books.map(book => book.title).join('; ');
+    csvContent += `${timestamp},Act2Set1Books,"${set1Titles}"\n`;
+    csvContent += `${timestamp},Act2Set2Books,"${set2Titles}"\n`;
+
+    // Save to localStorage
+    localStorage.setItem('csvContent', csvContent);
+}
+
     // Initialize variables
     let set1Books = [];
     let set2Books = [];
@@ -336,7 +363,7 @@
 
 function updateBookAuthor(book, newAuthor) {
     // Update book author after editing
-    console.log("Updating author for:", book.title, "to:", newAuthor);
+    const originalAuthor = book.author;
     book.author = newAuthor;
 
     // Find the book in set1Books and update the author
@@ -344,11 +371,12 @@ function updateBookAuthor(book, newAuthor) {
     if (bookIndex !== -1) {
         set1Books[bookIndex].author = newAuthor; // Update in the set1Books array
     }
+    logEditToCSV(book.title, "Author", originalAuthor, newAuthor);
 }
 
 function updateBookAgeRange(book, newAgeRange) {
     // Update book age range after editing
-    console.log("Updating age range for:", book.title, "to:", newAgeRange); 
+    const originalAgeRange = book.age_range;
     book.age_range = newAgeRange;
 
     // Find the book in set1Books and update the age range
@@ -356,11 +384,12 @@ function updateBookAgeRange(book, newAgeRange) {
     if (bookIndex !== -1) {
         set1Books[bookIndex].age_range = newAgeRange;  // Update in the set1Books array
     }
+    logEditToCSV(book.title, "AgeRange", originalAgeRange, newAgeRange);
 }
 
 function updateBookTags(book, newTag) {
     // Update book tags after editing
-    console.log("Updating tags for:", book.title, "with:", newTag);
+    const originalTags = book.tags.join(', ');
     const tagIndex = book.tags.indexOf(newTag);
     if (tagIndex === -1) {
         book.tags.push(newTag);  // Add new tag if not present
@@ -373,11 +402,15 @@ function updateBookTags(book, newTag) {
     if (bookIndex !== -1) {
         set1Books[bookIndex].tags = [...book.tags];  // Update tags in set1Books
     }
+    logEditToCSV(book.title, "Tags", originalTags, book.tags.join(', '));
 }
 
-
-let changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];  // Initialize or get the existing changes log
-
+function logEditToCSV(title, field, originalValue, newValue) {
+    let csvContent = localStorage.getItem('csvContent') || 'timestamp,tag,data\n';
+    const timestamp = new Date().toISOString();
+    csvContent += `${timestamp},Edit,"${title} - ${field}: ${originalValue} -> ${newValue}"\n`;
+    localStorage.setItem('csvContent', csvContent);
+}
 
 function editField(span, type, options, onChange) {
     // Sort the options alphabetically
@@ -406,16 +439,6 @@ function editField(span, type, options, onChange) {
     // Handle the selection change event
     select.addEventListener('change', function() {
         const newValue = select.value;
-
-        // Track the change in the log (store original and modified value)
-        changesLog.push({
-            bookTitle: span.closest('.book').querySelector('strong').textContent,  // Get the book's title
-            type: type,  // Type of change (author, age_range, tags)
-            originalValue: currentValue,
-            newValue: newValue
-        });
-
-        localStorage.setItem('changesLog', JSON.stringify(changesLog));  // Store the changes in localStorage
 
         onChange(newValue);  // Update the book's data
         editCount += 1;  // Increment edit count
@@ -486,20 +509,27 @@ function recommendBook(set1, set2) {
 }
 
 function getRecommendation() {
-    console.log("Set 1 Books: ", set1Books);
-    console.log("Set 2 Books: ", set2Books);
-    
     if (set1Books.length === 0 || set2Books.length === 0) {
         alert("Error: Books were not loaded correctly.");
         return;
     }
 
     const recommendedBook = recommendBook(set1Books, set2Books);
-    console.log("Recommended Book: ", recommendedBook);
+    const targetBook = set2Books[0];
+    const recommendationSuccess = recommendedBook.title === targetBook.title ? "Success" : "Failure";
+    const set2Scores = JSON.parse(localStorage.getItem('set2Scores')) || [];
+    const timestamp = new Date().toISOString();
 
+    // Prepare CSV content with recommendation details and Set 2 scores
+    let csvContent = localStorage.getItem('csvContent') || 'timestamp,tag,data\n';
+    csvContent += `${timestamp},Act2UserTargetSuccess,Result:${recommendationSuccess};AIRecommended:${recommendedBook.title};TargetBook:${targetBook.title}\n`;
+    csvContent += `${timestamp},Act2Set2Scores,"${set2Scores.map(({ book, similarity }) => `${book.title}: ${similarity.toFixed(2)}`).join('; ')}"\n`;
+
+    localStorage.setItem('csvContent', csvContent);
     localStorage.setItem('recommendation', JSON.stringify(recommendedBook));
     window.location.href = '../activities/activity2results.html';
 }
+
 function setEqualBookHeights() {
     // Get all book elements
     const bookElements = document.querySelectorAll('.book');
@@ -528,9 +558,6 @@ setEqualBookHeights();
 // Reapply the equal heights if the window is resized
 window.addEventListener('resize', setEqualBookHeights);
 
-// Initialize the activity
-randomizeBooks();
-displayBooks();
 </script>
 </body>
 </html>

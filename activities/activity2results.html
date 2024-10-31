@@ -132,34 +132,14 @@
         function restartActivity() {
             let csvContent = localStorage.getItem('csvContent') || "";  
             let attemptNumber = parseInt(localStorage.getItem('attemptNumber')) || 0;
-            attemptNumber += 1;  
-            localStorage.setItem('attemptNumber', attemptNumber);  
-            const changesLog = JSON.parse(localStorage.getItem('changesLog')) || [];
-            const targetBook = JSON.parse(localStorage.getItem('recommendation'));  
-            const isTargetRecommended = JSON.parse(localStorage.getItem('success'));
-
-            if (attemptNumber > 1) {
-                csvContent += "\n";  
-            }
-            csvContent += "Attempt,Book Title,Type,Original Value,New Value\n";
-            changesLog.forEach(change => {
-                csvContent += `${attemptNumber},${change.bookTitle},${change.type},${change.originalValue},${change.newValue}\n`;
-            });
-
-            if (targetBook) {
-                csvContent += `\nAttempt ${attemptNumber},Target Book Traits:,${isTargetRecommended}\n`;
-                csvContent += `Title,Author,Age Range,Tags\n`;
-                csvContent += `${targetBook.title},${targetBook.author},${targetBook.age_range},${targetBook.tags.join('; ')}\n`;
-                csvContent += "\n";  
-            }
-
+            const timestamp = new Date().toISOString();
+            csvContent += `${timestamp},Act1Retry,N/A\n`;
             localStorage.setItem('csvContent', csvContent);
 
             localStorage.removeItem('recommendation');  
             localStorage.removeItem('set2Scores');      
             localStorage.removeItem('traits');          
-            localStorage.removeItem('editCount');       
-            localStorage.removeItem('changesLog');      
+            localStorage.removeItem('editCount');             
 
             window.location.href = '../activities/activity2.html';
         }
