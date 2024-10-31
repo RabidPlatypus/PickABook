@@ -19,17 +19,7 @@ Pick-A-Book is an interactive web application that lets users explore how recomm
 
 ## Project Structure
 The project is organized into folders as follows:
-📦 Project Root 
-├── 📄 index.html # Main entry point, where users input their details to start activities 
-├── 📄 README.md # Project documentation 
-├── 📂 activities # Folder containing HTML files for each activity and result page 
-│ ├── 📄 activity1.html # Activity 1: Book recommendation selection 
-│ ├── 📄 activity1results.html# Results page for Activity 1 with similarity analysis 
-│ ├── 📄 activity2.html # Activity 2: Manipulate book data to influence recommendations 
-│ └── 📄 activity2results.html# Results page for Activity 2, showing recommendation outcome 
-├── 📂 Images # Folder containing images for each book │ └── 📄 [book images].jpg # Book cover images used throughout the activities 
-└── 📂 scripts # Folder for JavaScript files 
-└── 📄 booksData.js # Book data file with titles, authors, age ranges, tags, and image paths
+Pick-A-Book/ ├── index.html # Main entry point where users input details to start activities ├── README.md # Project documentation ├── activities/ # Folder containing HTML files for each activity and result page │ ├── activity1.html # Activity 1: Book recommendation selection │ ├── activity1results.html # Results page for Activity 1 with similarity analysis │ ├── activity2.html # Activity 2: Manipulate book data to influence recommendations │ └── activity2results.html # Results page for Activity 2, showing recommendation outcome ├── Images/ # Folder containing images for each book │ └── [book images].jpg # Book cover images used throughout the activities └── scripts/ # Folder for JavaScript files └── booksData.js # Book data file with titles, authors, age ranges, tags, and image paths
 
 
 ## Getting Started
