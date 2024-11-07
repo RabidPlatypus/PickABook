@@ -129,10 +129,13 @@
     const uniqueTags = [...new Set(books.flatMap(book => book.tags))];
 
     function randomizeBooks() {
-        // Shuffle all books, get first 8 for set 1 and the next 5 for set 2
         let shuffled = books.sort(() => Math.random() - 0.5);
         set1Books = shuffled.slice(0, 5);
         set2Books = shuffled.slice(5, 8);
+
+        // Store the titles of set1Books in localStorage for later use
+        const set1Titles = set1Books.map(book => book.title);
+        localStorage.setItem('set1BookTitles', JSON.stringify(set1Titles));
     }
 
     function bookToVector(book) {
