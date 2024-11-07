@@ -76,6 +76,45 @@
             text-align: center;
             font-size: 18px;
             margin: 20px 0;
+        }        
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .modal-content {
+            margin: auto;
+            padding: 20px;
+            background: #333;
+            width: 70%;
+            text-align: center;
+            color: white;
+        }
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .bar {
+            width: 40px;
+            background-color: limegreen;
+            text-align: center;
+            color: white;
         }
     </style>
 </head>
@@ -124,8 +163,20 @@
     </div>
 
     <div class="button-container">
+        <button class="button" onclick="openModal()">View Similarity Chart</button>
         <button class="button" onclick="retryActivity1()">Retry Activity</button>
         <button class="button" id="activity2-button">Go to Activity 2</button>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="similarityModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Similarity Scores for AI's Recommendations</h2>
+        <div class="chart-container" id="chartContainer">
+            <!-- Chart bars will be dynamically generated here -->
+        </div>
     </div>
 </div>
 
@@ -196,27 +247,59 @@
 
     // Display similarity calculations
     const similarityResults = document.getElementById('similarityResults');
-    
-    if (recommendationDetails) {
-        const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
-        
-        if (recommended) {
-            similarityResults.innerHTML += `<p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>`;
-            similarityResults.innerHTML += `<p>Individual Similarities with Set 1:</p>`;
-            similarityResults.innerHTML += `<ul>`;
-            recommended.details.individualSimilarities.forEach((sim, index) => {
-                similarityResults.innerHTML += `<li>Compared with Set 1 Book ${index + 1}: Similarity Score = ${sim.toFixed(2)}</li>`;
-            });
-            similarityResults.innerHTML += `</ul>`;
-        }
-    } else {
-        similarityResults.innerHTML = '<p>No recommendation details found.</p>';
+    const set1BookTitles = JSON.parse(localStorage.getItem('set1BookTitles')) || [];
+
+if (recommendationDetails) {
+    const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
+
+    if (recommended) {
+        similarityResults.innerHTML += `<p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>`;
+        similarityResults.innerHTML += `<p>Individual Similarities with Set 1:</p>`;
+        similarityResults.innerHTML += `<ul>`;
+        recommended.details.individualSimilarities.forEach((sim, index) => {
+            // Use the title from set1BookTitles if available, otherwise fall back to "Set # Book #"
+            const bookTitle = set1BookTitles[index] || `Set 1 Book ${index + 1}`;
+            similarityResults.innerHTML += `<li>Compared with ${bookTitle}: Similarity Score = ${sim.toFixed(2)}</li>`;
+        });
+        similarityResults.innerHTML += `</ul>`;
     }
+} else {
+    similarityResults.innerHTML = '<p>No recommendation details found.</p>';
+}
 
     // Add event listener to the button for navigation
     document.getElementById('activity2-button').addEventListener('click', function() {
         window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
     });
+
+    function openModal() {
+        const modal = document.getElementById("similarityModal");
+        const chartContainer = document.getElementById("chartContainer");
+        chartContainer.innerHTML = ""; 
+
+        if (recommendationDetails) {
+            recommendationDetails.forEach(({ book, similarity }) => {
+                const barDiv = document.createElement("div");
+                barDiv.classList.add("bar");
+                barDiv.style.height = `${similarity * 100}%`; 
+                barDiv.innerHTML = `<p>${(similarity * 100).toFixed(1)}%</p><p>${book.title}</p>`;
+                chartContainer.appendChild(barDiv);
+            });
+        }
+
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("similarityModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("similarityModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
 </script>
 
 </body>

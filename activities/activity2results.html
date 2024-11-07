@@ -125,7 +125,7 @@
             set2HTML += `</ul></div>`;
 
             // Combine the explanation, recommendation, and scores into a single view
-            resultDiv.innerHTML = `<div class="container">${explanationHTML}${recommendedBookHTML}${set2HTML}</div>`;
+            resultDiv.innerHTML = `<div class="container">${recommendedBookHTML}${set2HTML}${explanationHTML}</div>`;
         }
 
         // Function to handle the restart activity and save the current attempt's data to the CSV
