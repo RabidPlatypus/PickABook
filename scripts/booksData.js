@@ -40,7 +40,7 @@ const books =  [
 {"title": "My Neighbor Seki","image": "../Images/myneighbor.jpg","author": "T. Morishige","age_range": "Middle School","tags": ["Manga", "Comedy"]},
 {"title": "New Kid","image": "../Images/newkid.jpg","author": "J. Craft","age_range": "Middle School","tags": ["School Life", "Diversity"]},
 {"title": "Shallow Graves","image": "../Images/Shallowgraves.jpg","author": " K. Wallace","age_range": "High School","tags": ["Young Adult", "Paranormal"]},
-{"title": "Shuri","image": "../Images/shuri.jpg","author": "N. Stone","age_range": "Middle School","tags": ["Science Fiction", "Superheroes"]},
+{"title": "Shuri","image": "../Images/Shuri.jpg","author": "N. Stone","age_range": "Middle School","tags": ["Science Fiction", "Superheroes"]},
 {"title": "Splatoon","image": "../Images/SplatoonVl.jpg","author": "S. Hinodeya","age_range": "Middle School","tags": ["Action", "Adventure"]},
 {"title": "Sunkissed ","image": "../Images/Sunkissed.jpg","author": "S. Hinodeya","age_range": "Middle School","tags": ["Manga", "Humor"]},
 {"title": "This is our rainbow","image": "../Images/ThisisourRainbow.jpg","author": "K. Locke and N. Melleby.","age_range": "Middle School","tags": ["LGBTQ+ Representation", "Anthology"]},
