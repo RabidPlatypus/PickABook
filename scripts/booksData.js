@@ -33,7 +33,6 @@ const books =  [
 {"title": "Crime and Punishment","image": "../Images/CAP.jpg","author": "F. Dostoyevsky","age_range": "Adult","tags": ["Classic", "Psychological"]},
 {"title": "The Dead Girls of Hysteria Hall","image": "../Images/DGoHH.jpg","author": "K. Alender","age_range": "High School","tags": ["Young Adult", "Paranormal"]},
 {"title": "Don't Turn Out the Lights","image": "../Images/dontturnoutthelights.jpg","author": "J. Maberry","age_range": "Middle School","tags": ["Young Adult", " Urban Legends"]},
-{"title": "Dragon Ball","image": "../Images/Dragonballfullcolorvol2.jpg","author": "A. Toriyama","age_range": "High School","tags": ["Manga", "Action"]},
 {"title": "Drama","image": "../Images/Drama.jpg","author": "R. Telgemeier","age_range": "Middle School","tags": ["Friendship", "Inclusivity"]},
 {"title": "The Last Kids on Earth","image": "../Images/TLKOE.jpg","author": "M. Brallier","age_range": "High School","tags": ["Friendship", "Fantasy"]},
 {"title": "Long Way Down","image": "../Images/Longwaydown.jpg","author": "J. Reynolds","age_range": "High School","tags": ["Verse", "Social Justice"]},
