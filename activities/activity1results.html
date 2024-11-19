@@ -26,7 +26,7 @@
         .books-container {
             display: flex;
             flex-direction: column; /* Keep books in a column within each section */
-            width: 45%; /* Each section takes up about half of the container */
+            width: 30%; /* Each section takes up about half of the container */
         }
         .book {
             margin: 20px;
@@ -36,13 +36,13 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         img {
-            width: 150px;
+            width: 100px;
             height: auto;
         }
         .button-container {
             display: flex; 
             justify-content: center; 
-            margin-top: 20px; 
+            margin-top: 15px; 
             gap: 10px;
         }
         .button {
@@ -139,7 +139,7 @@
     <div class="message" id="comparisonMessage"></div>
 
     <div class="button-container">
-        <button class="button" onclick="openModal()">View Similarity Chart</button>
+        <button class="button" onclick="openSimilarityModal()">View Similarity Chart</button>
         <button class="button" onclick="openExplanationModal()">View Algorithm Explanation</button>
         <button class="button" onclick="retryActivity1()">Retry Activity</button>
         <button class="button" id="activity2-button">Go to Activity 2</button>
