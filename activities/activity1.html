@@ -11,42 +11,78 @@
             background: linear-gradient(to right, #30142c, #243B55);
             color: white;
             margin: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* Prevent scrolling */
         }
 
         .container {
-            width: 95%;
-            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 20px;
+            padding: 20px;
+            width: 100%;
+            height: 80vh; /* Occupy 80% of the viewport height */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .books-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px; /* Space between Set 1, separator, and Set 2 */
+            width: 100%;
         }
 
+        .books-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .books-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 200px;
+        }
         .books-container {
             display: flex;
-            justify-content: center; 
-            flex-wrap: wrap; 
-            margin-bottom: 20px;
-            overflow-x: auto;
-            gap: 8px; 
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
-
         .book {
-            margin: 5px;
             text-align: center;
             border: 2px solid white;
-            padding: 5px;
-            width: 110px; 
+            padding: 10px;
+            width: 100%;
+            max-width: 150px;
+            min-width: 80px;
             background-color: rgba(255, 255, 255, 0.1);
-            font-size: 14px;
-            flex: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
         }
+
 
         .button {
             background-color: limegreen;
-            padding: 10px 15px; 
+            padding: 10px 20px;
             color: white;
             border: none;
-            font-size: 1rem; 
+            font-size: 2vh;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 20px;
+            width: 100%; /* Full width */
+            max-width: 300px;
         }
 
         img {
@@ -54,7 +90,10 @@
             height: auto;
         }
 
-        h1, h2 {
+        h1{
+            font-size: 30px;
+        }
+        h2 {
             font-size: 16px;
             margin-bottom: 10px;
         }
@@ -64,25 +103,40 @@
             margin-top: 5px;
             text-align: center;
         }
+        button.button {
+            margin-top: 20px;
+            align-self: center;
+        }
+        .divider {
+            border-left: 2px solid white;
+            height: 50vh;
+            margin: 0 10px;
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
     <h1>Activity 1: Make A Book Recommendation</h1>
-
-    <h2>Based on the following books that the user has read in Set 1... </h2>
-    <div class="books-container" id="set1">
-        <!-- Books from Set 1 will appear here -->
+    <div class="container">
+        <div class="books-section">
+            <h2>Set 1: Based on the following books the user has read:</h2>
+            <div class="books-container" id="set1">
+                <!-- Books from Set 1 will appear here -->
+            </div>
+        </div>
+    
+        <div class="divider"></div>
+    
+        <div class="books-section">
+            <h2>Set 2: What book would you recommend they read next?</h2>
+            <div class="books-container" id="set2">
+                <!-- Books from Set 2 will appear here -->
+            </div>
+        </div>
     </div>
-
-    <h2>What book from Set 2 would you recommend they read next?:</h2>
-    <div class="books-container" id="set2">
-        <!-- Books from Set 2 will appear here -->
+    
+    <div style="display: flex; justify-content: center; position: fixed; bottom: 20px; width: 100%;">
+        <button id="recommend-button" class="button" onclick="displayRecommendation()">Make Recommendation</button>
     </div>
-
-    <button id="recommend-button" class="button" onclick="displayRecommendation()">Make Recommendation</button>
-</div>
 
 <script src="../scripts/booksData.js"></script>
 
