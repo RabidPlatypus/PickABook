@@ -145,7 +145,7 @@
         <button class="button" onclick="openModal()">View Similarity Scores</button>
         <button class="button" onclick="openExplanationModal()">View Algorithm Explanation</button>
         <button class="button" onclick="retryActivity1()">Retry Activity</button>
-        <button class="button" id="activity2-button">Go to Activity 2</button>
+        <button class="button" onclick="GoToActivty2()">Go to Activity 2</button>
     </div>
 </div>
 
@@ -154,7 +154,7 @@
     <div class="modal-content">
         <span class="close" onclick="closeExplanationModal()">&times;</span>
         <h2>How the Algorithm Works:</h2>
-        <p>The algorithm starts by randomizing the book list and splitting it into two sets: Set 1 (8 books the user has read) and Set 2 (5 books available for recommendation).</p>
+        <p>The algorithm starts by randomizing the book list and splitting it into two sets: Set 1 (5 books the user has read) and Set 2 (3 books available for recommendation).</p>
         <p>Each book is converted into a numerical vector based on its age range, author, and tags. This is done using predefined weights, which determine how much influence each feature has on the recommendation.</p>
         <p>For each book in Set 2, the algorithm calculates its similarity to the books in Set 1 using cosine similarity. This measures how closely related the books are based on their vectors, with values closer to 1 indicating higher similarity.</p>
         <p>Finally, the book from Set 2 with the highest average similarity score to the books in Set 1 is recommended to the user.</p>
@@ -260,12 +260,11 @@
         similarityResults.innerHTML = '<p>No recommendation details found.</p>';
     }
 
-        // Add event listener to the button for navigation
-        document.getElementById('activity2-button').addEventListener('click', function() {
-            window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
-        });
-
-        function openModal() {
+    function GoToActivty2() {
+        window.location.href = '../activities/activity2.html';
+    }
+    
+    function openModal() {
     const modal = document.getElementById("similarityModal");
     const chartContainer = document.getElementById("chartContainer");
     chartContainer.innerHTML = ""; // Clear any existing content
