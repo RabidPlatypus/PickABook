@@ -138,32 +138,9 @@
     <!-- Message container for success or failure message -->
     <div class="message" id="comparisonMessage"></div>
 
-    <div class="similarity-explanation-container">
-        <div class="similarity-container" id="similarityResults">
-            <h2>Similarity Calculations:</h2>
-            <!-- Similarity results will be displayed here -->
-        </div>
-    
-        <!-- Explanation section -->
-        <div class="explanation-container">
-            <h2>How the Algorithm Works:</h2>
-            <p id="algorithmExplanation">
-                The algorithm starts by randomizing the book list and splitting it into two sets: Set 1 (8 books the user has read) and Set 2 (5 books available for recommendation). 
-            </p>
-            <p>
-                Each book is converted into a numerical vector based on its age range, author, and tags. This is done using predefined weights, which determine how much influence each feature has on the recommendation. 
-            </p>
-            <p>
-                For each book in Set 2, the algorithm calculates its similarity to the books in Set 1 using cosine similarity. This measures how closely related the books are based on their vectors, with values closer to 1 indicating higher similarity. 
-            </p>
-            <p>
-                Finally, the book from Set 2 with the highest average similarity score to the books in Set 1 is recommended to the user.
-            </p>
-        </div>
-    </div>
-
     <div class="button-container">
         <button class="button" onclick="openModal()">View Similarity Chart</button>
+        <button class="button" onclick="openExplanationModal()">View Algorithm Explanation</button>
         <button class="button" onclick="retryActivity1()">Retry Activity</button>
         <button class="button" id="activity2-button">Go to Activity 2</button>
     </div>
@@ -173,6 +150,29 @@
 <div id="similarityModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Similarity Scores for AI's Recommendations</h2>
+        <div class="chart-container" id="chartContainer">
+            <!-- Chart bars will be dynamically generated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Explanation Modal -->
+<div id="explanationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeExplanationModal()">&times;</span>
+        <h2>How the Algorithm Works:</h2>
+        <p>The algorithm starts by randomizing the book list and splitting it into two sets: Set 1 (8 books the user has read) and Set 2 (5 books available for recommendation).</p>
+        <p>Each book is converted into a numerical vector based on its age range, author, and tags. This is done using predefined weights, which determine how much influence each feature has on the recommendation.</p>
+        <p>For each book in Set 2, the algorithm calculates its similarity to the books in Set 1 using cosine similarity. This measures how closely related the books are based on their vectors, with values closer to 1 indicating higher similarity.</p>
+        <p>Finally, the book from Set 2 with the highest average similarity score to the books in Set 1 is recommended to the user.</p>
+    </div>
+</div>
+
+<!-- Existing Similarity Modal -->
+<div id="similarityModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSimilarityModal()">&times;</span>
         <h2>Similarity Scores for AI's Recommendations</h2>
         <div class="chart-container" id="chartContainer">
             <!-- Chart bars will be dynamically generated here -->
@@ -272,23 +272,37 @@ if (recommendationDetails) {
         window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
     });
 
-    function openModal() {
-        const modal = document.getElementById("similarityModal");
-        const chartContainer = document.getElementById("chartContainer");
-        chartContainer.innerHTML = ""; 
+function openModal() {
+    const modal = document.getElementById("similarityModal");
+    const chartContainer = document.getElementById("chartContainer");
+    chartContainer.innerHTML = ""; // Clear any existing content
 
-        if (recommendationDetails) {
-            recommendationDetails.forEach(({ book, similarity }) => {
-                const barDiv = document.createElement("div");
-                barDiv.classList.add("bar");
-                barDiv.style.height = `${similarity * 100}%`; 
-                barDiv.innerHTML = `<p>${(similarity * 100).toFixed(1)}%</p><p>${book.title}</p>`;
-                chartContainer.appendChild(barDiv);
-            });
+    if (recommendationDetails) {
+        const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
+        if (recommended) {
+            // Add similarity calculation details as text
+            const contentDiv = document.createElement("div");
+            contentDiv.innerHTML = `
+                <h3>Similarity Calculations for "${recommended.book.title}":</h3>
+                <p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>
+                <p>Individual Similarities with Set 1:</p>
+                <ul>
+                    ${recommended.details.individualSimilarities.map((sim, index) => {
+                        const bookTitle = set1BookTitles[index] || `Set 1 Book ${index + 1}`;
+                        return `<li>Compared with ${bookTitle}: Similarity Score = ${sim.toFixed(2)}</li>`;
+                    }).join('')}
+                </ul>
+            `;
+            chartContainer.appendChild(contentDiv);
+        } else {
+            chartContainer.innerHTML = "<p>No recommendation details available.</p>";
         }
-
-        modal.style.display = "block";
+    } else {
+        chartContainer.innerHTML = "<p>No recommendation details found.</p>";
     }
+
+    modal.style.display = "block";
+}
 
     function closeModal() {
         document.getElementById("similarityModal").style.display = "none";
@@ -300,6 +314,27 @@ if (recommendationDetails) {
             modal.style.display = "none";
         }
     };
+
+    function openExplanationModal() {
+    document.getElementById("explanationModal").style.display = "block";
+}
+
+function closeExplanationModal() {
+    document.getElementById("explanationModal").style.display = "none";
+}
+
+// Ensure clicking outside the modal closes it
+window.onclick = function(event) {
+    const explanationModal = document.getElementById("explanationModal");
+    if (event.target === explanationModal) {
+        explanationModal.style.display = "none";
+    }
+
+    const similarityModal = document.getElementById("similarityModal");
+    if (event.target === similarityModal) {
+        similarityModal.style.display = "none";
+    }
+};
 </script>
 
 </body>
