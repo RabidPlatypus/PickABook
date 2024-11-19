@@ -19,14 +19,17 @@
             text-align: center;
         }
         .flex-container {
-            display: flex; /* Use flexbox to arrange children */
-            justify-content: space-between; /* Space between user and AI sections */
+            display: flex;
+            justify-content: center; /* Center the items horizontally */
+            gap: 20px; /* Add a small gap between the two containers */
             margin-bottom: 50px;
         }
+
         .books-container {
             display: flex;
-            flex-direction: column; /* Keep books in a column within each section */
-            width: 30%; /* Each section takes up about half of the container */
+            flex-direction: column;
+            width: 40%; /* Reduce the width to make them closer */
+            align-items: center; /* Center-align the content inside */
         }
         .book {
             margin: 20px;
