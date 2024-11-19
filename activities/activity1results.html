@@ -142,21 +142,10 @@
     <div class="message" id="comparisonMessage"></div>
 
     <div class="button-container">
-        <button class="button" onclick="openSimilarityModal()">View Similarity Chart</button>
+        <button class="button" onclick="openModal()">View Similarity Scores</button>
         <button class="button" onclick="openExplanationModal()">View Algorithm Explanation</button>
         <button class="button" onclick="retryActivity1()">Retry Activity</button>
         <button class="button" id="activity2-button">Go to Activity 2</button>
-    </div>
-</div>
-
-<!-- Modal Structure -->
-<div id="similarityModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Similarity Scores for AI's Recommendations</h2>
-        <div class="chart-container" id="chartContainer">
-            <!-- Chart bars will be dynamically generated here -->
-        </div>
     </div>
 </div>
 
@@ -180,6 +169,7 @@
         <div class="chart-container" id="chartContainer">
             <!-- Chart bars will be dynamically generated here -->
         </div>
+        <p>The score from the algorithm that is closest to 1.000 is the most similar!</p>
     </div>
 </div>
 
@@ -252,30 +242,30 @@
     const similarityResults = document.getElementById('similarityResults');
     const set1BookTitles = JSON.parse(localStorage.getItem('set1BookTitles')) || [];
 
-if (recommendationDetails) {
-    const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
+    if (recommendationDetails) {
+        const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
 
-    if (recommended) {
-        similarityResults.innerHTML += `<p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>`;
-        similarityResults.innerHTML += `<p>Individual Similarities with Set 1:</p>`;
-        similarityResults.innerHTML += `<ul>`;
-        recommended.details.individualSimilarities.forEach((sim, index) => {
-            // Use the title from set1BookTitles if available, otherwise fall back to "Set # Book #"
-            const bookTitle = set1BookTitles[index] || `Set 1 Book ${index + 1}`;
-            similarityResults.innerHTML += `<li>Compared with ${bookTitle}: Similarity Score = ${sim.toFixed(2)}</li>`;
-        });
-        similarityResults.innerHTML += `</ul>`;
+        if (recommended) {
+            similarityResults.innerHTML += `<p>Average Similarity Score: ${recommended.similarity.toFixed(2)}</p>`;
+            similarityResults.innerHTML += `<p>Individual Similarities with Set 1:</p>`;
+            similarityResults.innerHTML += `<ul>`;
+            recommended.details.individualSimilarities.forEach((sim, index) => {
+                // Use the title from set1BookTitles if available, otherwise fall back to "Set # Book #"
+                const bookTitle = set1BookTitles[index] || `Set 1 Book ${index + 1}`;
+                similarityResults.innerHTML += `<li>Compared with ${bookTitle}: Similarity Score = ${sim.toFixed(2)}</li>`;
+            });
+            similarityResults.innerHTML += `</ul>`;
+        }
+    } else {
+        similarityResults.innerHTML = '<p>No recommendation details found.</p>';
     }
-} else {
-    similarityResults.innerHTML = '<p>No recommendation details found.</p>';
-}
 
-    // Add event listener to the button for navigation
-    document.getElementById('activity2-button').addEventListener('click', function() {
-        window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
-    });
+        // Add event listener to the button for navigation
+        document.getElementById('activity2-button').addEventListener('click', function() {
+            window.location.href = '../activities/activity2.html'; // Redirect to activity2.html
+        });
 
-function openModal() {
+        function openModal() {
     const modal = document.getElementById("similarityModal");
     const chartContainer = document.getElementById("chartContainer");
     chartContainer.innerHTML = ""; // Clear any existing content
@@ -283,7 +273,6 @@ function openModal() {
     if (recommendationDetails) {
         const recommended = recommendationDetails.find(rec => rec.book.title === algorithmRecommendedBook.title);
         if (recommended) {
-            // Add similarity calculation details as text
             const contentDiv = document.createElement("div");
             contentDiv.innerHTML = `
                 <h3>Similarity Calculations for "${recommended.book.title}":</h3>
@@ -305,7 +294,8 @@ function openModal() {
     }
 
     modal.style.display = "block";
-}
+}    
+
 
     function closeModal() {
         document.getElementById("similarityModal").style.display = "none";
@@ -319,25 +309,34 @@ function openModal() {
     };
 
     function openExplanationModal() {
-    document.getElementById("explanationModal").style.display = "block";
-}
+        document.getElementById("explanationModal").style.display = "block";
+    }
 
-function closeExplanationModal() {
-    document.getElementById("explanationModal").style.display = "none";
-}
+    function closeExplanationModal() {
+        document.getElementById("explanationModal").style.display = "none";
+    }
 
+    function openSimilaityModal() {
+        document.getElementById("similarityModal").style.display = "block";
+    }
+
+    function closeSimilarityModal() {
+        document.getElementById("similarityModal").style.display = "none";
+    }
+    
+ 
 // Ensure clicking outside the modal closes it
-window.onclick = function(event) {
-    const explanationModal = document.getElementById("explanationModal");
-    if (event.target === explanationModal) {
-        explanationModal.style.display = "none";
-    }
+    window.onclick = function(event) {
+        const explanationModal = document.getElementById("explanationModal");
+        if (event.target === explanationModal) {
+            explanationModal.style.display = "none";
+        }
 
-    const similarityModal = document.getElementById("similarityModal");
-    if (event.target === similarityModal) {
-        similarityModal.style.display = "none";
-    }
-};
+        const similarityModal = document.getElementById("similarityModal");
+        if (event.target === similarityModal) {
+            similarityModal.style.display = "none";
+        }
+    };
 </script>
 
 </body>
